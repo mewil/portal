@@ -1,0 +1,15 @@
+{
+  "name": "@portal/app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@portal/theme": "1.0.0",
+    "@portal/home": "1.0.0"
+  }
+}

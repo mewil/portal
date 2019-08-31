@@ -1,0 +1,21 @@
+jobs:
+  include:
+    - language: node_js
+      node_js:
+        - 12.11.0
+      before_script:
+        - cd frontend
+        - yarn install
+      script: yarn run test
+
+    - language: go
+      dist: 1.13.0
+      before_script:
+        - cd backend
+      script: 
+        - go test ./...
+
+    - language: minimal
+      services:
+      - docker
+      script: docker build .

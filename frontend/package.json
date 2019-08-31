@@ -14,7 +14,7 @@
     "dev": "webpack-dev-server --progress --colors --inline --watch --hot --devtool source-map --history-api-fallback --host 0.0.0.0 --port 8000",
     "build": "webpack --progress --colors",
     "test": "yarn run lint && yarn run format && yarn run build",
-    "lint": "eslint scripts/ src/ *.js",
+    "lint": "./node_modules/.bin/eslint scripts/ src/ *.js",
     "pkg-create": "node ./scripts/pkg-create.js --package=${0}",
     "pkg-update": "node ./scripts/pkg-depends-cli.js --fix",
     "format": "scripts/prettier.sh"

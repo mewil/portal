@@ -111,3 +111,9 @@ func ResponseError(c *gin.Context, statusCode int, message string) {
 		messageKey: message,
 	})
 }
+
+// ResponseInternalError is a helper function to make sure all invalid HTTP responses
+// follow the same format
+func ResponseInternalError(c *gin.Context) {
+	ResponseError(c, http.StatusInternalServerError, "an unexpected error occurred, please try again")
+}

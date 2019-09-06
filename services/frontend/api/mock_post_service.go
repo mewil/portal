@@ -32,10 +32,10 @@ func (s *mockPostSvcClient) GetPost(ctx context.Context, in *pb.GetPostRequest, 
 func (s *mockPostSvcClient) GetFeed(ctx context.Context, in *pb.GetFeedRequest, opts ...grpc.CallOption) (*pb.GetFeedResponse, error) {
 	return nil, nil
 }
-func (s *mockPostSvcClient) GetPostLikes(ctx context.Context, in *pb.LikesRequest, opts ...grpc.CallOption) (*pb.LikesResponse, error) {
+func (s *mockPostSvcClient) GetPostLikes(ctx context.Context, in *pb.PostLikesRequest, opts ...grpc.CallOption) (*pb.LikesResponse, error) {
 	return nil, nil
 }
-func (s *mockPostSvcClient) GetCommentLikes(ctx context.Context, in *pb.LikesRequest, opts ...grpc.CallOption) (*pb.LikesResponse, error) {
+func (s *mockPostSvcClient) GetCommentLikes(ctx context.Context, in *pb.CommentLikesRequest, opts ...grpc.CallOption) (*pb.LikesResponse, error) {
 	return nil, nil
 }
 func (s *mockPostSvcClient) GetComments(ctx context.Context, in *pb.CommentsRequest, opts ...grpc.CallOption) (*pb.CommentsResponse, error) {

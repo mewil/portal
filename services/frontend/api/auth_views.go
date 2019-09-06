@@ -17,19 +17,22 @@ func (s *FrontendSvc) PostAuthSignIn(newAuthSvcClient AuthSvcInjector) gin.Handl
 		}{}
 		if err := c.ShouldBindJSON(&req); err != nil {
 			s.log.Info("")
-			ResponseError(c, http.StatusBadRequest, "")
+			ResponseError(c, http.StatusBadRequest, "please provide an email and password")
 			return
 		}
 		token, id, err := s.AuthSignIn(c.Request.Context(), newAuthSvcClient, req.Email, req.Password)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
-			ResponseOK(c, "successfully logged in user", gin.H{
+			ResponseOK(c, "successfully signed in user", gin.H{
 				"token": token,
 				"id":    id,
 			})
+		case codes.Unauthenticated:
+			ResponseError(c, http.StatusUnauthorized, "please provide a valid email and password")
 		default:
-			ResponseError(c, http.StatusInternalServerError, "")
+			s.log.Error(st.Err())
+			ResponseInternalError(c)
 		}
 	}
 }
@@ -44,20 +47,23 @@ func (s *FrontendSvc) PostAuthSignUp(newAuthSvcClient AuthSvcInjector, newUserSv
 			Password string `json:"password" binding:"required"`
 		}{}
 		if err := c.ShouldBindJSON(&req); err != nil {
-			s.log.Info("")
-			ResponseError(c, http.StatusBadRequest, "")
+			ResponseError(c, http.StatusBadRequest, "please provide an username, name, email, and password")
 			return
 		}
 		user, token, err := s.AuthSignUp(c.Request.Context(), newAuthSvcClient, newUserSvcClient, req.Username, req.Name, req.Email, req.Password)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
-			ResponseOK(c, "successfully logged in user", gin.H{
+			s.log.Info("successfully signed up user " + user.UserId)
+			ResponseOK(c, "successfully signed up user", gin.H{
 				"user":  user,
 				"token": token,
 			})
+		case codes.InvalidArgument:
+			ResponseError(c, http.StatusBadRequest, "please provide a valid username, email, and password")
 		default:
-			ResponseError(c, http.StatusInternalServerError, "please try again")
+			s.log.Error(st.Err())
+			ResponseInternalError(c)
 		}
 	}
 }

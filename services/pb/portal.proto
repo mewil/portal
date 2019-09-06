@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package pb;
+
+// AuthService ----------------------------------------------------------------
+
+service AuthService {
+    rpc SignIn(SignInRequest) returns (SignInResponse) {}
+    rpc SignUp(SignUpRequest) returns (SignInResponse) {}
+}
+
+message SignInRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message SignInResponse {
+    string user_id = 1;
+    bool is_admin = 3;
+}
+
+message SignUpRequest {
+    string email = 1;
+    string user_id = 2;
+    string password = 3;
+}
+
+// UserService ----------------------------------------------------------------
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (User) {}
+    rpc GetUser(GetUserRequest) returns (User) {}
+    rpc GetFollowers(FollowersRequest) returns (FollowersResponse) {}
+    rpc GetFollowing(FollowingRequest) returns (FollowingResponse) {}
+}
+
+message User {
+    string user_id = 1;
+    uint32 follower_count = 2;
+    uint32 following_count = 3;
+    bytes profile_picture = 4;
+    string name = 5;
+    string description = 6;
+    string username = 7;
+    uint32 post_count = 8;
+    fixed32 created_at_seconds = 9;
+    string email = 10;
+}
+
+message CreateUserRequest {
+    string user_id = 1;
+    string username = 2;
+    string email = 3;
+    string name = 4;
+}
+
+message GetUserRequest {
+    string user_id = 1;
+}
+
+message FollowersRequest {
+    string user_id = 1;
+    uint32 page = 2;
+}
+
+message FollowersResponse {
+    repeated User followers = 1;
+}
+
+message FollowingRequest {
+    string user_id = 1;
+    uint32 page = 2;
+}
+
+message FollowingResponse {
+    repeated User following = 1;
+}
+
+// PostService ----------------------------------------------------------------
+
+service PostService {
+    rpc CreatePost(CreatePostRequest) returns (Post) {}
+    rpc CreatePostLike(CreateLikeRequest) returns (Post) {}
+    rpc CreateCommentLike(CreateLikeRequest) returns (Post) {}
+    rpc CreateComment(CreateCommentRequest) returns (Post) {}
+    rpc GetPost(GetPostRequest) returns (Post) {}
+    rpc GetFeed(GetFeedRequest) returns (GetFeedResponse) {}
+    rpc GetPostLikes(LikesRequest) returns (LikesResponse) {}
+    rpc GetCommentLikes(LikesRequest) returns (LikesResponse) {}
+    rpc GetComments(CommentsRequest) returns (CommentsResponse) {}
+}
+
+message Post {
+    string post_id = 1;
+    bytes picture = 2;
+    uint32 like_count = 3;
+    repeated Comment top_comments = 4;
+    uint32 comment_count = 5;
+    string user_id = 6;
+    string caption = 7;
+    fixed32 created_at_seconds = 8;
+}
+
+message Comment {
+    string comment_id = 1;
+    string user_id = 2;
+    string description = 3;
+    uint32 like_count = 4;
+    fixed32 created_at_seconds = 5;
+}
+
+message Like {
+    string user_id = 1;
+    fixed32 created_at_seconds = 2;
+}
+
+message CreatePostRequest {
+    string post_id = 1;
+    bytes picture = 2;
+    string user_id = 3;
+    string caption = 4;
+}
+
+
+message CreateLikeRequest {
+    string post_id = 1;
+    bytes picture = 2;
+    string user_id = 3;
+    string caption = 4;
+}
+
+
+message CreateCommentRequest {
+    string post_id = 1;
+    bytes picture = 2;
+    string user_id = 3;
+    string caption = 4;
+}
+
+message GetPostRequest {
+    string post_id = 1;
+}
+
+message GetFeedRequest {
+    string user_id = 1;
+    uint32 page = 2;
+}
+
+message GetFeedResponse {
+    repeated Post posts = 1;
+}
+
+message CommentsRequest {
+    string user_id = 1;
+    uint32 page = 2;
+}
+
+message CommentsResponse {
+    repeated Post posts = 1;
+}
+
+message LikesRequest {
+    string id = 1;
+    uint32 page = 2;
+}
+
+message LikesResponse {
+    repeated Like likes = 1;
+}

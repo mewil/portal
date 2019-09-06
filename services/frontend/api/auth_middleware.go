@@ -26,15 +26,15 @@ func GetUserId(c *gin.Context) string {
 	return c.GetString(userIdClaimsKey)
 }
 
-func (s *FrontendService) UserAuthMiddleware() gin.HandlerFunc {
+func (s *FrontendSvc) UserAuthMiddleware() gin.HandlerFunc {
 	return s.authMiddleware(userAuthorizationGroup)
 }
 
-func (s *FrontendService) AdminAuthMiddleware() gin.HandlerFunc {
+func (s *FrontendSvc) AdminAuthMiddleware() gin.HandlerFunc {
 	return s.authMiddleware(adminAuthorizationGroup)
 }
 
-func (s *FrontendService) authMiddleware(authGroup string) gin.HandlerFunc {
+func (s *FrontendSvc) authMiddleware(authGroup string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if err := s.validateToken(c, authGroup); err != nil {
 			s.log.Info("unauthorized request", err)
@@ -57,7 +57,7 @@ func parseToken(c *gin.Context) (string, error) {
 	return "", errors.New("no auth token provided")
 }
 
-func (s *FrontendService) validateToken(c *gin.Context, authGroup string) error {
+func (s *FrontendSvc) validateToken(c *gin.Context, authGroup string) error {
 	tokenString, err := parseToken(c)
 	if err != nil {
 		return err
@@ -98,15 +98,15 @@ func (s *FrontendService) validateToken(c *gin.Context, authGroup string) error 
 	return nil
 }
 
-func (s *FrontendService) GenerateUserAuthToken(userId string) (string, error) {
+func (s *FrontendSvc) GenerateUserAuthToken(userId string) (string, error) {
 	return s.generateToken(userId, userAuthorizationGroup)
 }
 
-func (s *FrontendService) GenerateAdminAuthToken(userId string) (string, error) {
+func (s *FrontendSvc) GenerateAdminAuthToken(userId string) (string, error) {
 	return s.generateToken(userId, adminAuthorizationGroup)
 }
 
-func (s *FrontendService) generateToken(userId string, authGroup string) (string, error) {
+func (s *FrontendSvc) generateToken(userId string, authGroup string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, &jwt.MapClaims{
 		userIdClaimsKey:    userId,
 		authGroupClaimsKey: authGroup,

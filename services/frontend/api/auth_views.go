@@ -9,18 +9,18 @@ import (
 )
 
 // PostAuthSignIn handles POST /v1/auth/signin
-func (s *FrontendService) PostAuthSignIn() gin.HandlerFunc {
+func (s *FrontendSvc) PostAuthSignIn(newAuthSvcClient AuthSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		req := struct {
-			Email    string `json:"email" binding:"exists"`
-			Password string `json:"password" binding:"exists"`
+			Email    string `json:"email" binding:"required"`
+			Password string `json:"password" binding:"required"`
 		}{}
 		if err := c.ShouldBindJSON(&req); err != nil {
 			s.log.Info("")
 			ResponseError(c, http.StatusBadRequest, "")
 			return
 		}
-		token, id, err := s.AuthSignIn(c.Request.Context(), req.Email, req.Password)
+		token, id, err := s.AuthSignIn(c.Request.Context(), newAuthSvcClient, req.Email, req.Password)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -35,20 +35,20 @@ func (s *FrontendService) PostAuthSignIn() gin.HandlerFunc {
 }
 
 // PostAuthSignUp handles POST /v1/auth/signup
-func (s *FrontendService) PostAuthSignUp() gin.HandlerFunc {
+func (s *FrontendSvc) PostAuthSignUp(newAuthSvcClient AuthSvcInjector, newUserSvcClient UserSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		req := struct {
-			Username string `json:"username" binding:"exists"`
-			Name     string `json:"name" binding:"exists"`
-			Email    string `json:"email" binding:"exists"`
-			Password string `json:"password" binding:"exists"`
+			Username string `json:"username" binding:"required"`
+			Name     string `json:"name" binding:"required"`
+			Email    string `json:"email" binding:"required"`
+			Password string `json:"password" binding:"required"`
 		}{}
 		if err := c.ShouldBindJSON(&req); err != nil {
 			s.log.Info("")
 			ResponseError(c, http.StatusBadRequest, "")
 			return
 		}
-		user, token, err := s.AuthSignUp(c.Request.Context(), req.Username, req.Name, req.Email, req.Password)
+		user, token, err := s.AuthSignUp(c.Request.Context(), newAuthSvcClient, newUserSvcClient, req.Username, req.Name, req.Email, req.Password)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:

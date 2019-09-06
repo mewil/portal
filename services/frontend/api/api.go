@@ -6,54 +6,50 @@ import (
 	"os"
 	"time"
 
-	"github.com/didip/tollbooth"
-	"github.com/didip/tollbooth_gin"
 	"github.com/gin-gonic/gin"
 	"github.com/mewil/portal/common/logger"
+	"github.com/mewil/portal/pb"
 	"google.golang.org/grpc"
 )
 
-type FrontendService struct {
-	log             logger.Logger
-	jwtSecret       string
-	authServiceAddr string
-	authServiceConn *grpc.ClientConn
-	userServiceAddr string
-	userServiceConn *grpc.ClientConn
-	postServiceAddr string
-	postServiceConn *grpc.ClientConn
+type FrontendSvc struct {
+	log         logger.Logger
+	jwtSecret   string
+	authSvcAddr string
+	authSvcConn *grpc.ClientConn
+	userSvcAddr string
+	userSvcConn *grpc.ClientConn
+	postSvcAddr string
+	postSvcConn *grpc.ClientConn
 }
 
 func NewAPI(log logger.Logger, baseRouter *gin.RouterGroup, jwtSecret string) error {
-	s := FrontendService{
+	s := FrontendSvc{
 		log:       log,
 		jwtSecret: jwtSecret,
 	}
-	if err := s.createServiceConnections(); err != nil {
-		return err
-	}
 	s.createViews(baseRouter)
-	return nil
+	return s.createSvcConnections()
 }
 
 const (
-	authServiceArrEnvKey = "AUTH_SERVICE_ADDR"
-	userServiceArrEnvKey = "USER_SERVICE_ADDR"
-	postServiceArrEnvKey = "POST_SERVICE_ADDR"
+	authSvcArrEnvKey = "AUTH_SERVICE_ADDR"
+	userSvcArrEnvKey = "USER_SERVICE_ADDR"
+	postSvcArrEnvKey = "POST_SERVICE_ADDR"
 )
 
-func (s *FrontendService) createServiceConnections() error {
+func (s *FrontendSvc) createSvcConnections() error {
 	ctx := context.Background()
-	s.authServiceAddr = os.Getenv(authServiceArrEnvKey)
-	if err := createGrpcConnection(ctx, &s.authServiceConn, s.authServiceAddr); err != nil {
+	s.authSvcAddr = os.Getenv(authSvcArrEnvKey)
+	if err := createGrpcConnection(ctx, &s.authSvcConn, s.authSvcAddr); err != nil {
 		return err
 	}
-	s.userServiceAddr = os.Getenv(userServiceArrEnvKey)
-	if err := createGrpcConnection(ctx, &s.userServiceConn, s.userServiceAddr); err != nil {
+	s.userSvcAddr = os.Getenv(userSvcArrEnvKey)
+	if err := createGrpcConnection(ctx, &s.userSvcConn, s.userSvcAddr); err != nil {
 		return err
 	}
-	s.postServiceAddr = os.Getenv(postServiceArrEnvKey)
-	if err := createGrpcConnection(ctx, &s.postServiceConn, s.postServiceAddr); err != nil {
+	s.postSvcAddr = os.Getenv(postSvcArrEnvKey)
+	if err := createGrpcConnection(ctx, &s.postSvcConn, s.postSvcAddr); err != nil {
 		return err
 	}
 	return nil
@@ -67,17 +63,28 @@ func createGrpcConnection(ctx context.Context, conn **grpc.ClientConn, addr stri
 	return err
 }
 
-const rateLimitTPS = 0.5
+type AuthSvcInjector func() pb.AuthSvcClient
 
-func (s *FrontendService) createViews(baseRouter *gin.RouterGroup) {
-	rateLimitMiddleware := tollbooth_gin.LimitHandler(tollbooth.NewLimiter(rateLimitTPS, nil))
-	authRouter := baseRouter.Group("/auth")
-	authRouter.POST("/signin", rateLimitMiddleware, s.PostAuthSignIn())
-	authRouter.POST("/signup", rateLimitMiddleware, s.PostAuthSignUp())
-	userRouter := baseRouter.Group("/user")
-	userRouter.GET("/:id", s.UserAuthMiddleware(), s.GetUser())
-	userRouter.GET("/:id/followers", s.UserAuthMiddleware(), s.GetUserFollowers())
-	userRouter.GET("/:id/following", s.UserAuthMiddleware(), s.GetUserFollowing())
+func (s *FrontendSvc) injectAuthSvcClient() AuthSvcInjector {
+	return func() pb.AuthSvcClient {
+		return pb.NewAuthSvcClient(s.authSvcConn)
+	}
+}
+
+type UserSvcInjector func() pb.UserSvcClient
+
+func (s *FrontendSvc) injectUserSvcClient() UserSvcInjector {
+	return func() pb.UserSvcClient {
+		return pb.NewUserSvcClient(s.userSvcConn)
+	}
+}
+
+type PostSvcInjector func() pb.PostSvcClient
+
+func (s *FrontendSvc) injectPostSvcClient() PostSvcInjector {
+	return func() pb.PostSvcClient {
+		return pb.NewPostSvcClient(s.postSvcConn)
+	}
 }
 
 const (

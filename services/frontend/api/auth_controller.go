@@ -9,9 +9,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *FrontendService) AuthSignIn(ctx context.Context, email, password string) (string, string, error) {
+func (s *FrontendSvc) AuthSignIn(ctx context.Context, newAuthSvcClient func() pb.AuthSvcClient, email, password string) (string, string, error) {
 	req := &pb.SignInRequest{Email: email, Password: password}
-	res, err := pb.NewAuthServiceClient(s.authServiceConn).SignIn(ctx, req)
+	res, err := newAuthSvcClient().SignIn(ctx, req)
 	if err != nil {
 		return "", "", err
 	}
@@ -27,13 +27,13 @@ func (s *FrontendService) AuthSignIn(ctx context.Context, email, password string
 	return token, res.GetUserId(), nil
 }
 
-func (s *FrontendService) AuthSignUp(ctx context.Context, username, name, email, password string) (*pb.User, string, error) {
+func (s *FrontendSvc) AuthSignUp(ctx context.Context, newAuthSvcClient AuthSvcInjector, newUserSvcClient UserSvcInjector, username, name, email, password string) (*pb.User, string, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return nil, "", status.Errorf(codes.Internal, "failed to generate id for new user %s", err.Error())
 	}
 	authReq := &pb.SignUpRequest{Email: email, UserId: id.String(), Password: password}
-	authRes, err := pb.NewAuthServiceClient(s.authServiceConn).SignUp(ctx, authReq)
+	authRes, err := newAuthSvcClient().SignUp(ctx, authReq)
 	if err != nil {
 		return nil, "", err
 	}
@@ -44,7 +44,7 @@ func (s *FrontendService) AuthSignUp(ctx context.Context, username, name, email,
 		token, err = s.GenerateUserAuthToken(authRes.GetUserId())
 	}
 	userReq := &pb.CreateUserRequest{UserId: id.String(), Username: username, Email: email, Name: name}
-	user, err := pb.NewUserServiceClient(s.userServiceConn).CreateUser(ctx, userReq)
+	user, err := newUserSvcClient().CreateUser(ctx, userReq)
 	if err != nil {
 		return nil, "", err
 	}

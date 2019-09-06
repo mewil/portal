@@ -54,10 +54,14 @@ func (s *mockUserSvcClient) GetUser(ctx context.Context, in *pb.GetUserRequest, 
 	return nil, nil
 }
 
-func (s *mockUserSvcClient) GetFollowers(ctx context.Context, in *pb.FollowersRequest, opts ...grpc.CallOption) (*pb.FollowersResponse, error) {
+func (s *mockUserSvcClient) GetFollowers(ctx context.Context, in *pb.GetFollowersRequest, opts ...grpc.CallOption) (*pb.GetFollowersResponse, error) {
 	return nil, nil
 }
 
-func (s *mockUserSvcClient) GetFollowing(ctx context.Context, in *pb.FollowingRequest, opts ...grpc.CallOption) (*pb.FollowingResponse, error) {
+func (s *mockUserSvcClient) GetFollowing(ctx context.Context, in *pb.GetFollowingRequest, opts ...grpc.CallOption) (*pb.GetFollowingResponse, error) {
+	return nil, nil
+}
+
+func (s *mockUserSvcClient) CreateFollow(ctx context.Context, in *pb.CreateFollowRequest, opts ...grpc.CallOption) (*pb.CreateFollowResponse, error) {
 	return nil, nil
 }

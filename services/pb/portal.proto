@@ -4,7 +4,7 @@ package pb;
 
 // AuthService ----------------------------------------------------------------
 
-service AuthService {
+service AuthSvc {
     rpc SignIn(SignInRequest) returns (SignInResponse) {}
     rpc SignUp(SignUpRequest) returns (SignInResponse) {}
 }
@@ -27,11 +27,12 @@ message SignUpRequest {
 
 // UserService ----------------------------------------------------------------
 
-service UserService {
+service UserSvc {
     rpc CreateUser(CreateUserRequest) returns (User) {}
     rpc GetUser(GetUserRequest) returns (User) {}
-    rpc GetFollowers(FollowersRequest) returns (FollowersResponse) {}
-    rpc GetFollowing(FollowingRequest) returns (FollowingResponse) {}
+    rpc GetFollowers(GetFollowersRequest) returns (GetFollowersResponse) {}
+    rpc GetFollowing(GetFollowingRequest) returns (GetFollowingResponse) {}
+    rpc CreateFollow(CreateFollowRequest) returns (CreateFollowResponse) {}
 }
 
 message User {
@@ -58,35 +59,45 @@ message GetUserRequest {
     string user_id = 1;
 }
 
-message FollowersRequest {
+message GetFollowersRequest {
     string user_id = 1;
     uint32 page = 2;
 }
 
-message FollowersResponse {
+message GetFollowersResponse {
     repeated User followers = 1;
 }
 
-message FollowingRequest {
+message GetFollowingRequest {
     string user_id = 1;
     uint32 page = 2;
 }
 
-message FollowingResponse {
+message GetFollowingResponse {
     repeated User following = 1;
+}
+
+message CreateFollowRequest {
+    string user_id = 1;
+    string follow_id = 2;
+}
+
+message CreateFollowResponse {
+    User user = 1;
+    User following_user = 2;
 }
 
 // PostService ----------------------------------------------------------------
 
-service PostService {
+service PostSvc {
     rpc CreatePost(CreatePostRequest) returns (Post) {}
     rpc CreatePostLike(CreateLikeRequest) returns (Post) {}
     rpc CreateCommentLike(CreateLikeRequest) returns (Post) {}
     rpc CreateComment(CreateCommentRequest) returns (Post) {}
     rpc GetPost(GetPostRequest) returns (Post) {}
     rpc GetFeed(GetFeedRequest) returns (GetFeedResponse) {}
-    rpc GetPostLikes(LikesRequest) returns (LikesResponse) {}
-    rpc GetCommentLikes(LikesRequest) returns (LikesResponse) {}
+    rpc GetPostLikes(PostLikesRequest) returns (LikesResponse) {}
+    rpc GetCommentLikes(CommentLikesRequest) returns (LikesResponse) {}
     rpc GetComments(CommentsRequest) returns (CommentsResponse) {}
 }
 
@@ -159,8 +170,13 @@ message CommentsResponse {
     repeated Post posts = 1;
 }
 
-message LikesRequest {
-    string id = 1;
+message PostLikesRequest {
+    string post_id = 1;
+    uint32 page = 2;
+}
+
+message CommentLikesRequest {
+    string comment_id = 1;
     uint32 page = 2;
 }
 

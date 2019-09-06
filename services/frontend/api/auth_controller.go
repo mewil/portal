@@ -28,11 +28,11 @@ func (s *FrontendSvc) AuthSignIn(ctx context.Context, newAuthSvcClient func() pb
 }
 
 func (s *FrontendSvc) AuthSignUp(ctx context.Context, newAuthSvcClient AuthSvcInjector, newUserSvcClient UserSvcInjector, username, name, email, password string) (*pb.User, string, error) {
-	id, err := uuid.NewUUID()
+	userId, err := uuid.NewUUID()
 	if err != nil {
-		return nil, "", status.Errorf(codes.Internal, "failed to generate id for new user %s", err.Error())
+		return nil, "", status.Errorf(codes.Internal, "failed to generate UUID for new user %s", err.Error())
 	}
-	authReq := &pb.SignUpRequest{Email: email, UserId: id.String(), Password: password}
+	authReq := &pb.SignUpRequest{Email: email, UserId: userId.String(), Password: password}
 	authRes, err := newAuthSvcClient().SignUp(ctx, authReq)
 	if err != nil {
 		return nil, "", err
@@ -43,7 +43,7 @@ func (s *FrontendSvc) AuthSignUp(ctx context.Context, newAuthSvcClient AuthSvcIn
 	} else {
 		token, err = s.GenerateUserAuthToken(authRes.GetUserId())
 	}
-	userReq := &pb.CreateUserRequest{UserId: id.String(), Username: username, Email: email, Name: name}
+	userReq := &pb.CreateUserRequest{UserId: userId.String(), Username: username, Email: email, Name: name}
 	user, err := newUserSvcClient().CreateUser(ctx, userReq)
 	if err != nil {
 		return nil, "", err

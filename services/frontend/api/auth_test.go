@@ -1,4 +1,4 @@
-package api
+package api_test
 
 import (
 	"bytes"
@@ -7,20 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	// "github.com/mewil/portal/pb"
-	"github.com/mewil/portal/common/logger"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/gin-gonic/gin"
+	. "github.com/mewil/portal/frontend/api"
+	"github.com/stretchr/testify/assert"
 )
-
-type mockRequestResponse struct {
-	path    string
-	method  string
-	reqBody gin.H
-	status  int
-	check   func(gin.H)
-}
 
 func TestAuthViews(t *testing.T) {
 	tests := []mockRequestResponse{
@@ -94,11 +84,7 @@ func TestAuthViews(t *testing.T) {
 		},
 	}
 
-	log, _ := logger.NewLogger()
-	s := FrontendSvc{
-		log:       log,
-		jwtSecret: "secret",
-	}
+	s := NewTestAPI()
 	as := newMockAuthSvc()
 	us := newMockUserSvc()
 

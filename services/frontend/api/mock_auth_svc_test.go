@@ -1,8 +1,9 @@
-package api
+package api_test
 
 import (
 	"context"
 
+	. "github.com/mewil/portal/frontend/api"
 	"github.com/mewil/portal/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

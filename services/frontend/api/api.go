@@ -32,6 +32,15 @@ func NewAPI(log logger.Logger, baseRouter *gin.RouterGroup, jwtSecret string) er
 	return s.createSvcConnections()
 }
 
+func NewTestAPI() FrontendSvc {
+	log, _ := logger.NewLogger()
+	s := FrontendSvc{
+		log:       log,
+		jwtSecret: "jwtSecret",
+	}
+	return s
+}
+
 const (
 	authSvcArrEnvKey = "AUTH_SERVICE_ADDR"
 	userSvcArrEnvKey = "USER_SERVICE_ADDR"

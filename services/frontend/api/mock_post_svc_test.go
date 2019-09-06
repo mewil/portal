@@ -1,17 +1,34 @@
-package api
+package api_test
 
 import (
 	"context"
 
+	. "github.com/mewil/portal/frontend/api"
 	"github.com/mewil/portal/pb"
 	"google.golang.org/grpc"
 )
 
-type mockPostSvcClient struct {
+type mockPostSvc struct {
 }
 
-func newMockPostSvcClient() pb.PostSvcClient {
-	return &mockPostSvcClient{}
+func newMockPostSvc() *mockPostSvc {
+	return &mockPostSvc{}
+}
+
+func (s *mockPostSvc) injectMockPostSvcClient() PostSvcInjector {
+	return func() pb.PostSvcClient {
+		return s.newMockPostSvcClient()
+	}
+}
+
+func (s *mockPostSvc) newMockPostSvcClient() pb.PostSvcClient {
+	return &mockPostSvcClient{
+		svc: s,
+	}
+}
+
+type mockPostSvcClient struct {
+	svc *mockPostSvc
 }
 
 func (s *mockPostSvcClient) CreatePost(ctx context.Context, in *pb.CreatePostRequest, opts ...grpc.CallOption) (*pb.Post, error) {
@@ -40,10 +57,4 @@ func (s *mockPostSvcClient) GetCommentLikes(ctx context.Context, in *pb.CommentL
 }
 func (s *mockPostSvcClient) GetComments(ctx context.Context, in *pb.CommentsRequest, opts ...grpc.CallOption) (*pb.CommentsResponse, error) {
 	return nil, nil
-}
-
-func injectMockPostSvcClient() PostSvcInjector {
-	return func() pb.PostSvcClient {
-		return newMockPostSvcClient()
-	}
 }

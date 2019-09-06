@@ -16,7 +16,6 @@ func (s *FrontendSvc) PostAuthSignIn(newAuthSvcClient AuthSvcInjector) gin.Handl
 			Password string `json:"password" binding:"required"`
 		}{}
 		if err := c.ShouldBindJSON(&req); err != nil {
-			s.log.Info("")
 			ResponseError(c, http.StatusBadRequest, "please provide an email and password")
 			return
 		}

@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *FrontendSvc) AuthSignIn(ctx context.Context, newAuthSvcClient func() pb.AuthSvcClient, email, password string) (string, string, error) {
+func (s *FrontendSvc) AuthSvcSignIn(ctx context.Context, newAuthSvcClient func() pb.AuthSvcClient, email, password string) (string, string, error) {
 	req := &pb.SignInRequest{Email: email, Password: password}
 	res, err := newAuthSvcClient().SignIn(ctx, req)
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *FrontendSvc) AuthSignIn(ctx context.Context, newAuthSvcClient func() pb
 	return token, res.GetUserId(), nil
 }
 
-func (s *FrontendSvc) AuthSignUp(ctx context.Context, newAuthSvcClient AuthSvcInjector, newUserSvcClient UserSvcInjector, username, name, email, password string) (*pb.User, string, error) {
+func (s *FrontendSvc) AuthSvcSignUp(ctx context.Context, newAuthSvcClient AuthSvcInjector, newUserSvcClient UserSvcInjector, username, name, email, password string) (*pb.User, string, error) {
 	userId, err := uuid.NewUUID()
 	if err != nil {
 		return nil, "", status.Errorf(codes.Internal, "failed to generate UUID for new user %s", err.Error())

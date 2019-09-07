@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"net/http"
-	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,12 +21,23 @@ type FrontendSvc struct {
 	userSvcConn *grpc.ClientConn
 	postSvcAddr string
 	postSvcConn *grpc.ClientConn
+	fileSvcAddr string
+	fileSvcConn *grpc.ClientConn
 }
 
-func NewAPI(log logger.Logger, baseRouter *gin.RouterGroup, jwtSecret string) error {
+const (
+	fileBufferSize = 1024
+	fileSizeLimit  = 8000 * fileBufferSize
+)
+
+func NewAPI(log logger.Logger, baseRouter *gin.RouterGroup, jwtSecret, authSvcAddr, userSvcAddr, postSvcAddr, fileSvcAddr string) error {
 	s := FrontendSvc{
-		log:       log,
-		jwtSecret: jwtSecret,
+		log:         log,
+		jwtSecret:   jwtSecret,
+		authSvcAddr: authSvcAddr,
+		userSvcAddr: userSvcAddr,
+		postSvcAddr: postSvcAddr,
+		fileSvcAddr: fileSvcAddr,
 	}
 	s.createViews(baseRouter)
 	return s.createSvcConnections()
@@ -41,24 +52,18 @@ func NewTestAPI() FrontendSvc {
 	return s
 }
 
-const (
-	authSvcArrEnvKey = "AUTH_SERVICE_ADDR"
-	userSvcArrEnvKey = "USER_SERVICE_ADDR"
-	postSvcArrEnvKey = "POST_SERVICE_ADDR"
-)
-
 func (s *FrontendSvc) createSvcConnections() error {
 	ctx := context.Background()
-	s.authSvcAddr = os.Getenv(authSvcArrEnvKey)
 	if err := createGrpcConnection(ctx, &s.authSvcConn, s.authSvcAddr); err != nil {
 		return err
 	}
-	s.userSvcAddr = os.Getenv(userSvcArrEnvKey)
 	if err := createGrpcConnection(ctx, &s.userSvcConn, s.userSvcAddr); err != nil {
 		return err
 	}
-	s.postSvcAddr = os.Getenv(postSvcArrEnvKey)
 	if err := createGrpcConnection(ctx, &s.postSvcConn, s.postSvcAddr); err != nil {
+		return err
+	}
+	if err := createGrpcConnection(ctx, &s.fileSvcConn, s.fileSvcAddr); err != nil {
 		return err
 	}
 	return nil
@@ -96,6 +101,14 @@ func (s *FrontendSvc) injectPostSvcClient() PostSvcInjector {
 	}
 }
 
+type FileSvcInjector func() pb.FileSvcClient
+
+func (s *FrontendSvc) injectFileSvcClient() FileSvcInjector {
+	return func() pb.FileSvcClient {
+		return pb.NewFileSvcClient(s.fileSvcConn)
+	}
+}
+
 const (
 	statusKey  = "status"
 	messageKey = "message"
@@ -125,4 +138,10 @@ func ResponseError(c *gin.Context, statusCode int, message string) {
 // follow the same format
 func ResponseInternalError(c *gin.Context) {
 	ResponseError(c, http.StatusInternalServerError, "an unexpected error occurred, please try again")
+}
+
+// GetPageQueryParam is a helper function that returns the value of a `page` query parameter
+func GetPageQueryParam(c *gin.Context) (uint32, error) {
+	page, err := strconv.ParseUint(c.DefaultQuery("page", "0"), 10, 32)
+	return uint32(page), err
 }

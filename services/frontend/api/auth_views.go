@@ -19,7 +19,7 @@ func (s *FrontendSvc) PostAuthSignIn(newAuthSvcClient AuthSvcInjector) gin.Handl
 			ResponseError(c, http.StatusBadRequest, "please provide an email and password")
 			return
 		}
-		token, id, err := s.AuthSignIn(c.Request.Context(), newAuthSvcClient, req.Email, req.Password)
+		token, id, err := s.AuthSvcSignIn(c.Request.Context(), newAuthSvcClient, req.Email, req.Password)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -49,7 +49,7 @@ func (s *FrontendSvc) PostAuthSignUp(newAuthSvcClient AuthSvcInjector, newUserSv
 			ResponseError(c, http.StatusBadRequest, "please provide an username, name, email, and password")
 			return
 		}
-		user, token, err := s.AuthSignUp(c.Request.Context(), newAuthSvcClient, newUserSvcClient, req.Username, req.Name, req.Email, req.Password)
+		user, token, err := s.AuthSvcSignUp(c.Request.Context(), newAuthSvcClient, newUserSvcClient, req.Username, req.Name, req.Email, req.Password)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:

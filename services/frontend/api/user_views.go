@@ -109,13 +109,14 @@ func (s *FrontendSvc) GetUserProfile(newUserSvcClient UserSvcInjector, newPostSv
 			ResponseError(c, http.StatusBadRequest, "please provide a valid page number")
 			return
 		}
-		user, posts, err := s.UserSvcGetProfile(c.Request.Context(), newUserSvcClient, userId, uint32(page))
+		user, posts, nextPage, err := s.UserSvcGetProfile(c.Request.Context(), newUserSvcClient, newPostSvcClient, userId, uint32(page))
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
 			ResponseOK(c, "successfully fetched profile", gin.H{
-				"user":  user,
-				"posts": posts,
+				"user":      user,
+				"posts":     posts,
+				"next_page": nextPage,
 			})
 		case codes.NotFound:
 			ResponseError(c, http.StatusBadRequest, "please provide a valid user id")

@@ -23,18 +23,15 @@ func (s *FrontendSvc) UserSvcGetFollowing(ctx context.Context, newUserSvcClient 
 	return res.GetFollowing(), err
 }
 
-func (s *FrontendSvc) UserSvcGetProfile(ctx context.Context, newUserSvcClient UserSvcInjector, newPostSvcClient PostSvcInjector, userId string, page uint32) (*pb.User, []*pb.Post, error) {
+func (s *FrontendSvc) UserSvcGetProfile(ctx context.Context, newUserSvcClient UserSvcInjector, newPostSvcClient PostSvcInjector, userId string, page uint32) (*pb.User, []*pb.Post, uint32, error) {
 	userReq := &pb.GetUserRequest{UserId: userId}
 	userRes, err := newUserSvcClient().GetUser(ctx, userReq)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, 0, err
 	}
 	postReq := &pb.GetPostsRequest{UserId: userId, Page: page}
-	postRes, err := newPostSvcClient().Get(ctx, postReq)
-	if err != nil {
-		return nil, nil, err
-	}
-	return userRes.GetUser(), postRes.GetPosts(), nil
+	postRes, err := newPostSvcClient().GetProfile(ctx, postReq)
+	return userRes, postRes.GetPosts(), postRes.GetNextPage(), nil
 }
 
 func (s *FrontendSvc) UserSvcCreateFollow(ctx context.Context, newUserSvcClient UserSvcInjector, userId, followId string) (*pb.User, *pb.User, error) {

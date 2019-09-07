@@ -32,14 +32,15 @@ service UserSvc {
     rpc GetUser(GetUserRequest) returns (User) {}
     rpc GetFollowers(GetFollowersRequest) returns (GetFollowersResponse) {}
     rpc GetFollowing(GetFollowingRequest) returns (GetFollowingResponse) {}
-    rpc CreateFollow(CreateFollowRequest) returns (CreateFollowResponse) {}
+    rpc CreateFollow(FollowRequest) returns (FollowResponse) {}
+    rpc RemoveFollow(FollowRequest) returns (FollowResponse) {}
 }
 
 message User {
     string user_id = 1;
     uint32 follower_count = 2;
     uint32 following_count = 3;
-    bytes profile_picture = 4;
+    string file_id = 4;
     string name = 5;
     string description = 6;
     string username = 7;
@@ -77,12 +78,12 @@ message GetFollowingResponse {
     repeated User following = 1;
 }
 
-message CreateFollowRequest {
+message FollowRequest {
     string user_id = 1;
     string follow_id = 2;
 }
 
-message CreateFollowResponse {
+message FollowResponse {
     User user = 1;
     User following_user = 2;
 }
@@ -91,19 +92,21 @@ message CreateFollowResponse {
 
 service PostSvc {
     rpc CreatePost(CreatePostRequest) returns (Post) {}
-    rpc CreatePostLike(CreateLikeRequest) returns (Post) {}
-    rpc CreateCommentLike(CreateLikeRequest) returns (Post) {}
-    rpc CreateComment(CreateCommentRequest) returns (Post) {}
+    rpc CreatePostLike(CreatePostLikeRequest) returns (Post) {}
+    rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse) {}
+    rpc CreateCommentLike(CreateCommentLikeRequest) returns (Post) {}
     rpc GetPost(GetPostRequest) returns (Post) {}
-    rpc GetFeed(GetFeedRequest) returns (GetFeedResponse) {}
-    rpc GetPostLikes(PostLikesRequest) returns (LikesResponse) {}
-    rpc GetCommentLikes(CommentLikesRequest) returns (LikesResponse) {}
-    rpc GetComments(CommentsRequest) returns (CommentsResponse) {}
+    rpc GetProfile(GetPostsRequest) returns (GetPostsResponse) {}
+    rpc GetFeed(GetPostsRequest) returns (GetPostsResponse) {}
+    rpc GetPostLikes(GetPostLikesRequest) returns (LikesResponse) {}
+    rpc GetPostComments(GetPostCommentsRequest) returns (CommentsResponse) {}
+    rpc GetCommentLikes(GetCommentLikesRequest) returns (LikesResponse) {}
+    rpc GetComment(GetCommentRequest) returns (Comment) {}
 }
 
 message Post {
     string post_id = 1;
-    bytes picture = 2;
+    string file_id = 2;
     uint32 like_count = 3;
     repeated Comment top_comments = 4;
     uint32 comment_count = 5;
@@ -115,71 +118,111 @@ message Post {
 message Comment {
     string comment_id = 1;
     string user_id = 2;
-    string description = 3;
-    uint32 like_count = 4;
-    fixed32 created_at_seconds = 5;
+    string post_id = 3;
+    string description = 4;
+    uint32 like_count = 5;
+    fixed32 created_at_seconds = 6;
 }
 
 message Like {
-    string user_id = 1;
-    fixed32 created_at_seconds = 2;
+    string like_id = 1;
+    string user_id = 2;
+    string post_id = 3;
+    fixed32 created_at_seconds = 4;
 }
 
 message CreatePostRequest {
     string post_id = 1;
-    bytes picture = 2;
+    string file_id = 2;
     string user_id = 3;
     string caption = 4;
 }
 
 
-message CreateLikeRequest {
-    string post_id = 1;
-    bytes picture = 2;
-    string user_id = 3;
-    string caption = 4;
+message CreatePostLikeRequest {
+    string like_id = 1;
+    string user_id = 2;
+    string post_id = 3;
 }
 
+message CreateCommentLikeRequest {
+    string like_id = 1;
+    string user_id = 2;
+    string comment_id = 3;
+}
 
 message CreateCommentRequest {
     string post_id = 1;
-    bytes picture = 2;
+    string comment_id = 2;
     string user_id = 3;
-    string caption = 4;
+    string text = 4;
+}
+
+message CreateCommentResponse {
+    Post post = 1;
+    Comment comment = 2;
 }
 
 message GetPostRequest {
     string post_id = 1;
 }
 
-message GetFeedRequest {
+message GetPostsRequest {
     string user_id = 1;
     uint32 page = 2;
 }
 
-message GetFeedResponse {
+message GetPostsResponse {
     repeated Post posts = 1;
+    uint32 next_page = 2;
 }
 
-message CommentsRequest {
-    string user_id = 1;
-    uint32 page = 2;
+message GetCommentRequest {
+    string comment_id = 1;
 }
 
-message CommentsResponse {
-    repeated Post posts = 1;
-}
-
-message PostLikesRequest {
+message GetPostCommentsRequest {
     string post_id = 1;
     uint32 page = 2;
 }
 
-message CommentLikesRequest {
+message CommentsResponse {
+    repeated Comment comments = 1;
+    uint32 next_page = 2;
+}
+
+message GetPostLikesRequest {
+    string post_id = 1;
+    uint32 page = 2;
+}
+
+message GetCommentLikesRequest {
     string comment_id = 1;
     uint32 page = 2;
 }
 
 message LikesResponse {
     repeated Like likes = 1;
+    uint32 next_page = 2;
+}
+
+// FileService ----------------------------------------------------------------
+
+service FileSvc {
+    rpc Upload(stream FilePart) returns (UploadStatus) {}
+}
+
+message FilePart {
+    bytes content = 1;
+}
+
+enum UploadStatusCode {
+    Unknown = 0;
+    Ok = 1;
+    Failed = 2;
+}
+
+message UploadStatus {
+    string file_id = 1;
+    UploadStatusCode status = 2;
 }

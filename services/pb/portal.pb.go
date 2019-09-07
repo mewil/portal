@@ -24,6 +24,34 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type UploadStatusCode int32
+
+const (
+	UploadStatusCode_Unknown UploadStatusCode = 0
+	UploadStatusCode_Ok      UploadStatusCode = 1
+	UploadStatusCode_Failed  UploadStatusCode = 2
+)
+
+var UploadStatusCode_name = map[int32]string{
+	0: "Unknown",
+	1: "Ok",
+	2: "Failed",
+}
+
+var UploadStatusCode_value = map[string]int32{
+	"Unknown": 0,
+	"Ok":      1,
+	"Failed":  2,
+}
+
+func (x UploadStatusCode) String() string {
+	return proto.EnumName(UploadStatusCode_name, int32(x))
+}
+
+func (UploadStatusCode) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{0}
+}
+
 type SignInRequest struct {
 	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
@@ -177,7 +205,7 @@ type User struct {
 	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	FollowerCount        uint32   `protobuf:"varint,2,opt,name=follower_count,json=followerCount,proto3" json:"follower_count,omitempty"`
 	FollowingCount       uint32   `protobuf:"varint,3,opt,name=following_count,json=followingCount,proto3" json:"following_count,omitempty"`
-	ProfilePicture       []byte   `protobuf:"bytes,4,opt,name=profile_picture,json=profilePicture,proto3" json:"profile_picture,omitempty"`
+	FileId               string   `protobuf:"bytes,4,opt,name=file_id,json=fileId,proto3" json:"file_id,omitempty"`
 	Name                 string   `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 	Description          string   `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
 	Username             string   `protobuf:"bytes,7,opt,name=username,proto3" json:"username,omitempty"`
@@ -235,11 +263,11 @@ func (m *User) GetFollowingCount() uint32 {
 	return 0
 }
 
-func (m *User) GetProfilePicture() []byte {
+func (m *User) GetFileId() string {
 	if m != nil {
-		return m.ProfilePicture
+		return m.FileId
 	}
-	return nil
+	return ""
 }
 
 func (m *User) GetName() string {
@@ -558,7 +586,7 @@ func (m *GetFollowingResponse) GetFollowing() []*User {
 	return nil
 }
 
-type CreateFollowRequest struct {
+type FollowRequest struct {
 	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	FollowId             string   `protobuf:"bytes,2,opt,name=follow_id,json=followId,proto3" json:"follow_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -566,46 +594,46 @@ type CreateFollowRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateFollowRequest) Reset()         { *m = CreateFollowRequest{} }
-func (m *CreateFollowRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateFollowRequest) ProtoMessage()    {}
-func (*CreateFollowRequest) Descriptor() ([]byte, []int) {
+func (m *FollowRequest) Reset()         { *m = FollowRequest{} }
+func (m *FollowRequest) String() string { return proto.CompactTextString(m) }
+func (*FollowRequest) ProtoMessage()    {}
+func (*FollowRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ead6f188e0e8e0b1, []int{10}
 }
 
-func (m *CreateFollowRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateFollowRequest.Unmarshal(m, b)
+func (m *FollowRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FollowRequest.Unmarshal(m, b)
 }
-func (m *CreateFollowRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateFollowRequest.Marshal(b, m, deterministic)
+func (m *FollowRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FollowRequest.Marshal(b, m, deterministic)
 }
-func (m *CreateFollowRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateFollowRequest.Merge(m, src)
+func (m *FollowRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FollowRequest.Merge(m, src)
 }
-func (m *CreateFollowRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateFollowRequest.Size(m)
+func (m *FollowRequest) XXX_Size() int {
+	return xxx_messageInfo_FollowRequest.Size(m)
 }
-func (m *CreateFollowRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateFollowRequest.DiscardUnknown(m)
+func (m *FollowRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_FollowRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateFollowRequest proto.InternalMessageInfo
+var xxx_messageInfo_FollowRequest proto.InternalMessageInfo
 
-func (m *CreateFollowRequest) GetUserId() string {
+func (m *FollowRequest) GetUserId() string {
 	if m != nil {
 		return m.UserId
 	}
 	return ""
 }
 
-func (m *CreateFollowRequest) GetFollowId() string {
+func (m *FollowRequest) GetFollowId() string {
 	if m != nil {
 		return m.FollowId
 	}
 	return ""
 }
 
-type CreateFollowResponse struct {
+type FollowResponse struct {
 	User                 *User    `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	FollowingUser        *User    `protobuf:"bytes,2,opt,name=following_user,json=followingUser,proto3" json:"following_user,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -613,39 +641,39 @@ type CreateFollowResponse struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateFollowResponse) Reset()         { *m = CreateFollowResponse{} }
-func (m *CreateFollowResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateFollowResponse) ProtoMessage()    {}
-func (*CreateFollowResponse) Descriptor() ([]byte, []int) {
+func (m *FollowResponse) Reset()         { *m = FollowResponse{} }
+func (m *FollowResponse) String() string { return proto.CompactTextString(m) }
+func (*FollowResponse) ProtoMessage()    {}
+func (*FollowResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ead6f188e0e8e0b1, []int{11}
 }
 
-func (m *CreateFollowResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateFollowResponse.Unmarshal(m, b)
+func (m *FollowResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FollowResponse.Unmarshal(m, b)
 }
-func (m *CreateFollowResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateFollowResponse.Marshal(b, m, deterministic)
+func (m *FollowResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FollowResponse.Marshal(b, m, deterministic)
 }
-func (m *CreateFollowResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateFollowResponse.Merge(m, src)
+func (m *FollowResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FollowResponse.Merge(m, src)
 }
-func (m *CreateFollowResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateFollowResponse.Size(m)
+func (m *FollowResponse) XXX_Size() int {
+	return xxx_messageInfo_FollowResponse.Size(m)
 }
-func (m *CreateFollowResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateFollowResponse.DiscardUnknown(m)
+func (m *FollowResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_FollowResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateFollowResponse proto.InternalMessageInfo
+var xxx_messageInfo_FollowResponse proto.InternalMessageInfo
 
-func (m *CreateFollowResponse) GetUser() *User {
+func (m *FollowResponse) GetUser() *User {
 	if m != nil {
 		return m.User
 	}
 	return nil
 }
 
-func (m *CreateFollowResponse) GetFollowingUser() *User {
+func (m *FollowResponse) GetFollowingUser() *User {
 	if m != nil {
 		return m.FollowingUser
 	}
@@ -654,7 +682,7 @@ func (m *CreateFollowResponse) GetFollowingUser() *User {
 
 type Post struct {
 	PostId               string     `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	Picture              []byte     `protobuf:"bytes,2,opt,name=picture,proto3" json:"picture,omitempty"`
+	FileId               string     `protobuf:"bytes,2,opt,name=file_id,json=fileId,proto3" json:"file_id,omitempty"`
 	LikeCount            uint32     `protobuf:"varint,3,opt,name=like_count,json=likeCount,proto3" json:"like_count,omitempty"`
 	TopComments          []*Comment `protobuf:"bytes,4,rep,name=top_comments,json=topComments,proto3" json:"top_comments,omitempty"`
 	CommentCount         uint32     `protobuf:"varint,5,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
@@ -698,11 +726,11 @@ func (m *Post) GetPostId() string {
 	return ""
 }
 
-func (m *Post) GetPicture() []byte {
+func (m *Post) GetFileId() string {
 	if m != nil {
-		return m.Picture
+		return m.FileId
 	}
-	return nil
+	return ""
 }
 
 func (m *Post) GetLikeCount() uint32 {
@@ -750,9 +778,10 @@ func (m *Post) GetCreatedAtSeconds() uint32 {
 type Comment struct {
 	CommentId            string   `protobuf:"bytes,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
 	UserId               string   `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	LikeCount            uint32   `protobuf:"varint,4,opt,name=like_count,json=likeCount,proto3" json:"like_count,omitempty"`
-	CreatedAtSeconds     uint32   `protobuf:"fixed32,5,opt,name=created_at_seconds,json=createdAtSeconds,proto3" json:"created_at_seconds,omitempty"`
+	PostId               string   `protobuf:"bytes,3,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	Description          string   `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	LikeCount            uint32   `protobuf:"varint,5,opt,name=like_count,json=likeCount,proto3" json:"like_count,omitempty"`
+	CreatedAtSeconds     uint32   `protobuf:"fixed32,6,opt,name=created_at_seconds,json=createdAtSeconds,proto3" json:"created_at_seconds,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -797,6 +826,13 @@ func (m *Comment) GetUserId() string {
 	return ""
 }
 
+func (m *Comment) GetPostId() string {
+	if m != nil {
+		return m.PostId
+	}
+	return ""
+}
+
 func (m *Comment) GetDescription() string {
 	if m != nil {
 		return m.Description
@@ -819,8 +855,10 @@ func (m *Comment) GetCreatedAtSeconds() uint32 {
 }
 
 type Like struct {
-	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	CreatedAtSeconds     uint32   `protobuf:"fixed32,2,opt,name=created_at_seconds,json=createdAtSeconds,proto3" json:"created_at_seconds,omitempty"`
+	LikeId               string   `protobuf:"bytes,1,opt,name=like_id,json=likeId,proto3" json:"like_id,omitempty"`
+	UserId               string   `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	PostId               string   `protobuf:"bytes,3,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	CreatedAtSeconds     uint32   `protobuf:"fixed32,4,opt,name=created_at_seconds,json=createdAtSeconds,proto3" json:"created_at_seconds,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -851,9 +889,23 @@ func (m *Like) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Like proto.InternalMessageInfo
 
+func (m *Like) GetLikeId() string {
+	if m != nil {
+		return m.LikeId
+	}
+	return ""
+}
+
 func (m *Like) GetUserId() string {
 	if m != nil {
 		return m.UserId
+	}
+	return ""
+}
+
+func (m *Like) GetPostId() string {
+	if m != nil {
+		return m.PostId
 	}
 	return ""
 }
@@ -867,7 +919,7 @@ func (m *Like) GetCreatedAtSeconds() uint32 {
 
 type CreatePostRequest struct {
 	PostId               string   `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	Picture              []byte   `protobuf:"bytes,2,opt,name=picture,proto3" json:"picture,omitempty"`
+	FileId               string   `protobuf:"bytes,2,opt,name=file_id,json=fileId,proto3" json:"file_id,omitempty"`
 	UserId               string   `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Caption              string   `protobuf:"bytes,4,opt,name=caption,proto3" json:"caption,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -907,11 +959,11 @@ func (m *CreatePostRequest) GetPostId() string {
 	return ""
 }
 
-func (m *CreatePostRequest) GetPicture() []byte {
+func (m *CreatePostRequest) GetFileId() string {
 	if m != nil {
-		return m.Picture
+		return m.FileId
 	}
-	return nil
+	return ""
 }
 
 func (m *CreatePostRequest) GetUserId() string {
@@ -928,74 +980,121 @@ func (m *CreatePostRequest) GetCaption() string {
 	return ""
 }
 
-type CreateLikeRequest struct {
-	PostId               string   `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	Picture              []byte   `protobuf:"bytes,2,opt,name=picture,proto3" json:"picture,omitempty"`
-	UserId               string   `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Caption              string   `protobuf:"bytes,4,opt,name=caption,proto3" json:"caption,omitempty"`
+type CreatePostLikeRequest struct {
+	LikeId               string   `protobuf:"bytes,1,opt,name=like_id,json=likeId,proto3" json:"like_id,omitempty"`
+	UserId               string   `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	PostId               string   `protobuf:"bytes,3,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateLikeRequest) Reset()         { *m = CreateLikeRequest{} }
-func (m *CreateLikeRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateLikeRequest) ProtoMessage()    {}
-func (*CreateLikeRequest) Descriptor() ([]byte, []int) {
+func (m *CreatePostLikeRequest) Reset()         { *m = CreatePostLikeRequest{} }
+func (m *CreatePostLikeRequest) String() string { return proto.CompactTextString(m) }
+func (*CreatePostLikeRequest) ProtoMessage()    {}
+func (*CreatePostLikeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ead6f188e0e8e0b1, []int{16}
 }
 
-func (m *CreateLikeRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateLikeRequest.Unmarshal(m, b)
+func (m *CreatePostLikeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreatePostLikeRequest.Unmarshal(m, b)
 }
-func (m *CreateLikeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateLikeRequest.Marshal(b, m, deterministic)
+func (m *CreatePostLikeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreatePostLikeRequest.Marshal(b, m, deterministic)
 }
-func (m *CreateLikeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateLikeRequest.Merge(m, src)
+func (m *CreatePostLikeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreatePostLikeRequest.Merge(m, src)
 }
-func (m *CreateLikeRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateLikeRequest.Size(m)
+func (m *CreatePostLikeRequest) XXX_Size() int {
+	return xxx_messageInfo_CreatePostLikeRequest.Size(m)
 }
-func (m *CreateLikeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateLikeRequest.DiscardUnknown(m)
+func (m *CreatePostLikeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreatePostLikeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateLikeRequest proto.InternalMessageInfo
+var xxx_messageInfo_CreatePostLikeRequest proto.InternalMessageInfo
 
-func (m *CreateLikeRequest) GetPostId() string {
+func (m *CreatePostLikeRequest) GetLikeId() string {
 	if m != nil {
-		return m.PostId
+		return m.LikeId
 	}
 	return ""
 }
 
-func (m *CreateLikeRequest) GetPicture() []byte {
-	if m != nil {
-		return m.Picture
-	}
-	return nil
-}
-
-func (m *CreateLikeRequest) GetUserId() string {
+func (m *CreatePostLikeRequest) GetUserId() string {
 	if m != nil {
 		return m.UserId
 	}
 	return ""
 }
 
-func (m *CreateLikeRequest) GetCaption() string {
+func (m *CreatePostLikeRequest) GetPostId() string {
 	if m != nil {
-		return m.Caption
+		return m.PostId
+	}
+	return ""
+}
+
+type CreateCommentLikeRequest struct {
+	LikeId               string   `protobuf:"bytes,1,opt,name=like_id,json=likeId,proto3" json:"like_id,omitempty"`
+	UserId               string   `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CommentId            string   `protobuf:"bytes,3,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateCommentLikeRequest) Reset()         { *m = CreateCommentLikeRequest{} }
+func (m *CreateCommentLikeRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateCommentLikeRequest) ProtoMessage()    {}
+func (*CreateCommentLikeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{17}
+}
+
+func (m *CreateCommentLikeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateCommentLikeRequest.Unmarshal(m, b)
+}
+func (m *CreateCommentLikeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateCommentLikeRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateCommentLikeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateCommentLikeRequest.Merge(m, src)
+}
+func (m *CreateCommentLikeRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateCommentLikeRequest.Size(m)
+}
+func (m *CreateCommentLikeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateCommentLikeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateCommentLikeRequest proto.InternalMessageInfo
+
+func (m *CreateCommentLikeRequest) GetLikeId() string {
+	if m != nil {
+		return m.LikeId
+	}
+	return ""
+}
+
+func (m *CreateCommentLikeRequest) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *CreateCommentLikeRequest) GetCommentId() string {
+	if m != nil {
+		return m.CommentId
 	}
 	return ""
 }
 
 type CreateCommentRequest struct {
 	PostId               string   `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
-	Picture              []byte   `protobuf:"bytes,2,opt,name=picture,proto3" json:"picture,omitempty"`
+	CommentId            string   `protobuf:"bytes,2,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
 	UserId               string   `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Caption              string   `protobuf:"bytes,4,opt,name=caption,proto3" json:"caption,omitempty"`
+	Text                 string   `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1005,7 +1104,7 @@ func (m *CreateCommentRequest) Reset()         { *m = CreateCommentRequest{} }
 func (m *CreateCommentRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateCommentRequest) ProtoMessage()    {}
 func (*CreateCommentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{17}
+	return fileDescriptor_ead6f188e0e8e0b1, []int{18}
 }
 
 func (m *CreateCommentRequest) XXX_Unmarshal(b []byte) error {
@@ -1033,11 +1132,11 @@ func (m *CreateCommentRequest) GetPostId() string {
 	return ""
 }
 
-func (m *CreateCommentRequest) GetPicture() []byte {
+func (m *CreateCommentRequest) GetCommentId() string {
 	if m != nil {
-		return m.Picture
+		return m.CommentId
 	}
-	return nil
+	return ""
 }
 
 func (m *CreateCommentRequest) GetUserId() string {
@@ -1047,11 +1146,58 @@ func (m *CreateCommentRequest) GetUserId() string {
 	return ""
 }
 
-func (m *CreateCommentRequest) GetCaption() string {
+func (m *CreateCommentRequest) GetText() string {
 	if m != nil {
-		return m.Caption
+		return m.Text
 	}
 	return ""
+}
+
+type CreateCommentResponse struct {
+	Post                 *Post    `protobuf:"bytes,1,opt,name=post,proto3" json:"post,omitempty"`
+	Comment              *Comment `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateCommentResponse) Reset()         { *m = CreateCommentResponse{} }
+func (m *CreateCommentResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateCommentResponse) ProtoMessage()    {}
+func (*CreateCommentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{19}
+}
+
+func (m *CreateCommentResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateCommentResponse.Unmarshal(m, b)
+}
+func (m *CreateCommentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateCommentResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateCommentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateCommentResponse.Merge(m, src)
+}
+func (m *CreateCommentResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateCommentResponse.Size(m)
+}
+func (m *CreateCommentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateCommentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateCommentResponse proto.InternalMessageInfo
+
+func (m *CreateCommentResponse) GetPost() *Post {
+	if m != nil {
+		return m.Post
+	}
+	return nil
+}
+
+func (m *CreateCommentResponse) GetComment() *Comment {
+	if m != nil {
+		return m.Comment
+	}
+	return nil
 }
 
 type GetPostRequest struct {
@@ -1065,7 +1211,7 @@ func (m *GetPostRequest) Reset()         { *m = GetPostRequest{} }
 func (m *GetPostRequest) String() string { return proto.CompactTextString(m) }
 func (*GetPostRequest) ProtoMessage()    {}
 func (*GetPostRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{18}
+	return fileDescriptor_ead6f188e0e8e0b1, []int{20}
 }
 
 func (m *GetPostRequest) XXX_Unmarshal(b []byte) error {
@@ -1093,7 +1239,7 @@ func (m *GetPostRequest) GetPostId() string {
 	return ""
 }
 
-type GetFeedRequest struct {
+type GetPostsRequest struct {
 	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Page                 uint32   `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1101,125 +1247,172 @@ type GetFeedRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetFeedRequest) Reset()         { *m = GetFeedRequest{} }
-func (m *GetFeedRequest) String() string { return proto.CompactTextString(m) }
-func (*GetFeedRequest) ProtoMessage()    {}
-func (*GetFeedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{19}
+func (m *GetPostsRequest) Reset()         { *m = GetPostsRequest{} }
+func (m *GetPostsRequest) String() string { return proto.CompactTextString(m) }
+func (*GetPostsRequest) ProtoMessage()    {}
+func (*GetPostsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{21}
 }
 
-func (m *GetFeedRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetFeedRequest.Unmarshal(m, b)
+func (m *GetPostsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPostsRequest.Unmarshal(m, b)
 }
-func (m *GetFeedRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetFeedRequest.Marshal(b, m, deterministic)
+func (m *GetPostsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPostsRequest.Marshal(b, m, deterministic)
 }
-func (m *GetFeedRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetFeedRequest.Merge(m, src)
+func (m *GetPostsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPostsRequest.Merge(m, src)
 }
-func (m *GetFeedRequest) XXX_Size() int {
-	return xxx_messageInfo_GetFeedRequest.Size(m)
+func (m *GetPostsRequest) XXX_Size() int {
+	return xxx_messageInfo_GetPostsRequest.Size(m)
 }
-func (m *GetFeedRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetFeedRequest.DiscardUnknown(m)
+func (m *GetPostsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPostsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetFeedRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetPostsRequest proto.InternalMessageInfo
 
-func (m *GetFeedRequest) GetUserId() string {
+func (m *GetPostsRequest) GetUserId() string {
 	if m != nil {
 		return m.UserId
 	}
 	return ""
 }
 
-func (m *GetFeedRequest) GetPage() uint32 {
+func (m *GetPostsRequest) GetPage() uint32 {
 	if m != nil {
 		return m.Page
 	}
 	return 0
 }
 
-type GetFeedResponse struct {
+type GetPostsResponse struct {
 	Posts                []*Post  `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
+	NextPage             uint32   `protobuf:"varint,2,opt,name=next_page,json=nextPage,proto3" json:"next_page,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetFeedResponse) Reset()         { *m = GetFeedResponse{} }
-func (m *GetFeedResponse) String() string { return proto.CompactTextString(m) }
-func (*GetFeedResponse) ProtoMessage()    {}
-func (*GetFeedResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{20}
+func (m *GetPostsResponse) Reset()         { *m = GetPostsResponse{} }
+func (m *GetPostsResponse) String() string { return proto.CompactTextString(m) }
+func (*GetPostsResponse) ProtoMessage()    {}
+func (*GetPostsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{22}
 }
 
-func (m *GetFeedResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetFeedResponse.Unmarshal(m, b)
+func (m *GetPostsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPostsResponse.Unmarshal(m, b)
 }
-func (m *GetFeedResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetFeedResponse.Marshal(b, m, deterministic)
+func (m *GetPostsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPostsResponse.Marshal(b, m, deterministic)
 }
-func (m *GetFeedResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetFeedResponse.Merge(m, src)
+func (m *GetPostsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPostsResponse.Merge(m, src)
 }
-func (m *GetFeedResponse) XXX_Size() int {
-	return xxx_messageInfo_GetFeedResponse.Size(m)
+func (m *GetPostsResponse) XXX_Size() int {
+	return xxx_messageInfo_GetPostsResponse.Size(m)
 }
-func (m *GetFeedResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetFeedResponse.DiscardUnknown(m)
+func (m *GetPostsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPostsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetFeedResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetPostsResponse proto.InternalMessageInfo
 
-func (m *GetFeedResponse) GetPosts() []*Post {
+func (m *GetPostsResponse) GetPosts() []*Post {
 	if m != nil {
 		return m.Posts
 	}
 	return nil
 }
 
-type CommentsRequest struct {
-	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+func (m *GetPostsResponse) GetNextPage() uint32 {
+	if m != nil {
+		return m.NextPage
+	}
+	return 0
+}
+
+type GetCommentRequest struct {
+	CommentId            string   `protobuf:"bytes,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetCommentRequest) Reset()         { *m = GetCommentRequest{} }
+func (m *GetCommentRequest) String() string { return proto.CompactTextString(m) }
+func (*GetCommentRequest) ProtoMessage()    {}
+func (*GetCommentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{23}
+}
+
+func (m *GetCommentRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetCommentRequest.Unmarshal(m, b)
+}
+func (m *GetCommentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetCommentRequest.Marshal(b, m, deterministic)
+}
+func (m *GetCommentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetCommentRequest.Merge(m, src)
+}
+func (m *GetCommentRequest) XXX_Size() int {
+	return xxx_messageInfo_GetCommentRequest.Size(m)
+}
+func (m *GetCommentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetCommentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetCommentRequest proto.InternalMessageInfo
+
+func (m *GetCommentRequest) GetCommentId() string {
+	if m != nil {
+		return m.CommentId
+	}
+	return ""
+}
+
+type GetPostCommentsRequest struct {
+	PostId               string   `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
 	Page                 uint32   `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CommentsRequest) Reset()         { *m = CommentsRequest{} }
-func (m *CommentsRequest) String() string { return proto.CompactTextString(m) }
-func (*CommentsRequest) ProtoMessage()    {}
-func (*CommentsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{21}
+func (m *GetPostCommentsRequest) Reset()         { *m = GetPostCommentsRequest{} }
+func (m *GetPostCommentsRequest) String() string { return proto.CompactTextString(m) }
+func (*GetPostCommentsRequest) ProtoMessage()    {}
+func (*GetPostCommentsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{24}
 }
 
-func (m *CommentsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CommentsRequest.Unmarshal(m, b)
+func (m *GetPostCommentsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPostCommentsRequest.Unmarshal(m, b)
 }
-func (m *CommentsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CommentsRequest.Marshal(b, m, deterministic)
+func (m *GetPostCommentsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPostCommentsRequest.Marshal(b, m, deterministic)
 }
-func (m *CommentsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CommentsRequest.Merge(m, src)
+func (m *GetPostCommentsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPostCommentsRequest.Merge(m, src)
 }
-func (m *CommentsRequest) XXX_Size() int {
-	return xxx_messageInfo_CommentsRequest.Size(m)
+func (m *GetPostCommentsRequest) XXX_Size() int {
+	return xxx_messageInfo_GetPostCommentsRequest.Size(m)
 }
-func (m *CommentsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CommentsRequest.DiscardUnknown(m)
+func (m *GetPostCommentsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPostCommentsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CommentsRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetPostCommentsRequest proto.InternalMessageInfo
 
-func (m *CommentsRequest) GetUserId() string {
+func (m *GetPostCommentsRequest) GetPostId() string {
 	if m != nil {
-		return m.UserId
+		return m.PostId
 	}
 	return ""
 }
 
-func (m *CommentsRequest) GetPage() uint32 {
+func (m *GetPostCommentsRequest) GetPage() uint32 {
 	if m != nil {
 		return m.Page
 	}
@@ -1227,17 +1420,18 @@ func (m *CommentsRequest) GetPage() uint32 {
 }
 
 type CommentsResponse struct {
-	Posts                []*Post  `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Comments             []*Comment `protobuf:"bytes,1,rep,name=comments,proto3" json:"comments,omitempty"`
+	NextPage             uint32     `protobuf:"varint,2,opt,name=next_page,json=nextPage,proto3" json:"next_page,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
 }
 
 func (m *CommentsResponse) Reset()         { *m = CommentsResponse{} }
 func (m *CommentsResponse) String() string { return proto.CompactTextString(m) }
 func (*CommentsResponse) ProtoMessage()    {}
 func (*CommentsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{22}
+	return fileDescriptor_ead6f188e0e8e0b1, []int{25}
 }
 
 func (m *CommentsResponse) XXX_Unmarshal(b []byte) error {
@@ -1258,14 +1452,21 @@ func (m *CommentsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CommentsResponse proto.InternalMessageInfo
 
-func (m *CommentsResponse) GetPosts() []*Post {
+func (m *CommentsResponse) GetComments() []*Comment {
 	if m != nil {
-		return m.Posts
+		return m.Comments
 	}
 	return nil
 }
 
-type PostLikesRequest struct {
+func (m *CommentsResponse) GetNextPage() uint32 {
+	if m != nil {
+		return m.NextPage
+	}
+	return 0
+}
+
+type GetPostLikesRequest struct {
 	PostId               string   `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
 	Page                 uint32   `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1273,46 +1474,46 @@ type PostLikesRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *PostLikesRequest) Reset()         { *m = PostLikesRequest{} }
-func (m *PostLikesRequest) String() string { return proto.CompactTextString(m) }
-func (*PostLikesRequest) ProtoMessage()    {}
-func (*PostLikesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{23}
+func (m *GetPostLikesRequest) Reset()         { *m = GetPostLikesRequest{} }
+func (m *GetPostLikesRequest) String() string { return proto.CompactTextString(m) }
+func (*GetPostLikesRequest) ProtoMessage()    {}
+func (*GetPostLikesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{26}
 }
 
-func (m *PostLikesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_PostLikesRequest.Unmarshal(m, b)
+func (m *GetPostLikesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPostLikesRequest.Unmarshal(m, b)
 }
-func (m *PostLikesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_PostLikesRequest.Marshal(b, m, deterministic)
+func (m *GetPostLikesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPostLikesRequest.Marshal(b, m, deterministic)
 }
-func (m *PostLikesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PostLikesRequest.Merge(m, src)
+func (m *GetPostLikesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPostLikesRequest.Merge(m, src)
 }
-func (m *PostLikesRequest) XXX_Size() int {
-	return xxx_messageInfo_PostLikesRequest.Size(m)
+func (m *GetPostLikesRequest) XXX_Size() int {
+	return xxx_messageInfo_GetPostLikesRequest.Size(m)
 }
-func (m *PostLikesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_PostLikesRequest.DiscardUnknown(m)
+func (m *GetPostLikesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPostLikesRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PostLikesRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetPostLikesRequest proto.InternalMessageInfo
 
-func (m *PostLikesRequest) GetPostId() string {
+func (m *GetPostLikesRequest) GetPostId() string {
 	if m != nil {
 		return m.PostId
 	}
 	return ""
 }
 
-func (m *PostLikesRequest) GetPage() uint32 {
+func (m *GetPostLikesRequest) GetPage() uint32 {
 	if m != nil {
 		return m.Page
 	}
 	return 0
 }
 
-type CommentLikesRequest struct {
+type GetCommentLikesRequest struct {
 	CommentId            string   `protobuf:"bytes,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
 	Page                 uint32   `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1320,39 +1521,39 @@ type CommentLikesRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CommentLikesRequest) Reset()         { *m = CommentLikesRequest{} }
-func (m *CommentLikesRequest) String() string { return proto.CompactTextString(m) }
-func (*CommentLikesRequest) ProtoMessage()    {}
-func (*CommentLikesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{24}
+func (m *GetCommentLikesRequest) Reset()         { *m = GetCommentLikesRequest{} }
+func (m *GetCommentLikesRequest) String() string { return proto.CompactTextString(m) }
+func (*GetCommentLikesRequest) ProtoMessage()    {}
+func (*GetCommentLikesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{27}
 }
 
-func (m *CommentLikesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CommentLikesRequest.Unmarshal(m, b)
+func (m *GetCommentLikesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetCommentLikesRequest.Unmarshal(m, b)
 }
-func (m *CommentLikesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CommentLikesRequest.Marshal(b, m, deterministic)
+func (m *GetCommentLikesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetCommentLikesRequest.Marshal(b, m, deterministic)
 }
-func (m *CommentLikesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CommentLikesRequest.Merge(m, src)
+func (m *GetCommentLikesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetCommentLikesRequest.Merge(m, src)
 }
-func (m *CommentLikesRequest) XXX_Size() int {
-	return xxx_messageInfo_CommentLikesRequest.Size(m)
+func (m *GetCommentLikesRequest) XXX_Size() int {
+	return xxx_messageInfo_GetCommentLikesRequest.Size(m)
 }
-func (m *CommentLikesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CommentLikesRequest.DiscardUnknown(m)
+func (m *GetCommentLikesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetCommentLikesRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CommentLikesRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetCommentLikesRequest proto.InternalMessageInfo
 
-func (m *CommentLikesRequest) GetCommentId() string {
+func (m *GetCommentLikesRequest) GetCommentId() string {
 	if m != nil {
 		return m.CommentId
 	}
 	return ""
 }
 
-func (m *CommentLikesRequest) GetPage() uint32 {
+func (m *GetCommentLikesRequest) GetPage() uint32 {
 	if m != nil {
 		return m.Page
 	}
@@ -1361,6 +1562,7 @@ func (m *CommentLikesRequest) GetPage() uint32 {
 
 type LikesResponse struct {
 	Likes                []*Like  `protobuf:"bytes,1,rep,name=likes,proto3" json:"likes,omitempty"`
+	NextPage             uint32   `protobuf:"varint,2,opt,name=next_page,json=nextPage,proto3" json:"next_page,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1370,7 +1572,7 @@ func (m *LikesResponse) Reset()         { *m = LikesResponse{} }
 func (m *LikesResponse) String() string { return proto.CompactTextString(m) }
 func (*LikesResponse) ProtoMessage()    {}
 func (*LikesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ead6f188e0e8e0b1, []int{25}
+	return fileDescriptor_ead6f188e0e8e0b1, []int{28}
 }
 
 func (m *LikesResponse) XXX_Unmarshal(b []byte) error {
@@ -1398,7 +1600,101 @@ func (m *LikesResponse) GetLikes() []*Like {
 	return nil
 }
 
+func (m *LikesResponse) GetNextPage() uint32 {
+	if m != nil {
+		return m.NextPage
+	}
+	return 0
+}
+
+type FilePart struct {
+	Content              []byte   `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FilePart) Reset()         { *m = FilePart{} }
+func (m *FilePart) String() string { return proto.CompactTextString(m) }
+func (*FilePart) ProtoMessage()    {}
+func (*FilePart) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{29}
+}
+
+func (m *FilePart) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FilePart.Unmarshal(m, b)
+}
+func (m *FilePart) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FilePart.Marshal(b, m, deterministic)
+}
+func (m *FilePart) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FilePart.Merge(m, src)
+}
+func (m *FilePart) XXX_Size() int {
+	return xxx_messageInfo_FilePart.Size(m)
+}
+func (m *FilePart) XXX_DiscardUnknown() {
+	xxx_messageInfo_FilePart.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FilePart proto.InternalMessageInfo
+
+func (m *FilePart) GetContent() []byte {
+	if m != nil {
+		return m.Content
+	}
+	return nil
+}
+
+type UploadStatus struct {
+	FileId               string           `protobuf:"bytes,1,opt,name=file_id,json=fileId,proto3" json:"file_id,omitempty"`
+	Status               UploadStatusCode `protobuf:"varint,2,opt,name=status,proto3,enum=pb.UploadStatusCode" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *UploadStatus) Reset()         { *m = UploadStatus{} }
+func (m *UploadStatus) String() string { return proto.CompactTextString(m) }
+func (*UploadStatus) ProtoMessage()    {}
+func (*UploadStatus) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ead6f188e0e8e0b1, []int{30}
+}
+
+func (m *UploadStatus) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UploadStatus.Unmarshal(m, b)
+}
+func (m *UploadStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UploadStatus.Marshal(b, m, deterministic)
+}
+func (m *UploadStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UploadStatus.Merge(m, src)
+}
+func (m *UploadStatus) XXX_Size() int {
+	return xxx_messageInfo_UploadStatus.Size(m)
+}
+func (m *UploadStatus) XXX_DiscardUnknown() {
+	xxx_messageInfo_UploadStatus.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UploadStatus proto.InternalMessageInfo
+
+func (m *UploadStatus) GetFileId() string {
+	if m != nil {
+		return m.FileId
+	}
+	return ""
+}
+
+func (m *UploadStatus) GetStatus() UploadStatusCode {
+	if m != nil {
+		return m.Status
+	}
+	return UploadStatusCode_Unknown
+}
+
 func init() {
+	proto.RegisterEnum("pb.UploadStatusCode", UploadStatusCode_name, UploadStatusCode_value)
 	proto.RegisterType((*SignInRequest)(nil), "pb.SignInRequest")
 	proto.RegisterType((*SignInResponse)(nil), "pb.SignInResponse")
 	proto.RegisterType((*SignUpRequest)(nil), "pb.SignUpRequest")
@@ -1409,92 +1705,114 @@ func init() {
 	proto.RegisterType((*GetFollowersResponse)(nil), "pb.GetFollowersResponse")
 	proto.RegisterType((*GetFollowingRequest)(nil), "pb.GetFollowingRequest")
 	proto.RegisterType((*GetFollowingResponse)(nil), "pb.GetFollowingResponse")
-	proto.RegisterType((*CreateFollowRequest)(nil), "pb.CreateFollowRequest")
-	proto.RegisterType((*CreateFollowResponse)(nil), "pb.CreateFollowResponse")
+	proto.RegisterType((*FollowRequest)(nil), "pb.FollowRequest")
+	proto.RegisterType((*FollowResponse)(nil), "pb.FollowResponse")
 	proto.RegisterType((*Post)(nil), "pb.Post")
 	proto.RegisterType((*Comment)(nil), "pb.Comment")
 	proto.RegisterType((*Like)(nil), "pb.Like")
 	proto.RegisterType((*CreatePostRequest)(nil), "pb.CreatePostRequest")
-	proto.RegisterType((*CreateLikeRequest)(nil), "pb.CreateLikeRequest")
+	proto.RegisterType((*CreatePostLikeRequest)(nil), "pb.CreatePostLikeRequest")
+	proto.RegisterType((*CreateCommentLikeRequest)(nil), "pb.CreateCommentLikeRequest")
 	proto.RegisterType((*CreateCommentRequest)(nil), "pb.CreateCommentRequest")
+	proto.RegisterType((*CreateCommentResponse)(nil), "pb.CreateCommentResponse")
 	proto.RegisterType((*GetPostRequest)(nil), "pb.GetPostRequest")
-	proto.RegisterType((*GetFeedRequest)(nil), "pb.GetFeedRequest")
-	proto.RegisterType((*GetFeedResponse)(nil), "pb.GetFeedResponse")
-	proto.RegisterType((*CommentsRequest)(nil), "pb.CommentsRequest")
+	proto.RegisterType((*GetPostsRequest)(nil), "pb.GetPostsRequest")
+	proto.RegisterType((*GetPostsResponse)(nil), "pb.GetPostsResponse")
+	proto.RegisterType((*GetCommentRequest)(nil), "pb.GetCommentRequest")
+	proto.RegisterType((*GetPostCommentsRequest)(nil), "pb.GetPostCommentsRequest")
 	proto.RegisterType((*CommentsResponse)(nil), "pb.CommentsResponse")
-	proto.RegisterType((*PostLikesRequest)(nil), "pb.PostLikesRequest")
-	proto.RegisterType((*CommentLikesRequest)(nil), "pb.CommentLikesRequest")
+	proto.RegisterType((*GetPostLikesRequest)(nil), "pb.GetPostLikesRequest")
+	proto.RegisterType((*GetCommentLikesRequest)(nil), "pb.GetCommentLikesRequest")
 	proto.RegisterType((*LikesResponse)(nil), "pb.LikesResponse")
+	proto.RegisterType((*FilePart)(nil), "pb.FilePart")
+	proto.RegisterType((*UploadStatus)(nil), "pb.UploadStatus")
 }
 
 func init() { proto.RegisterFile("portal.proto", fileDescriptor_ead6f188e0e8e0b1) }
 
 var fileDescriptor_ead6f188e0e8e0b1 = []byte{
-	// 1017 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x57, 0xdd, 0x8e, 0xdb, 0x44,
-	0x14, 0xde, 0x38, 0x4e, 0x9c, 0x9c, 0xfc, 0xec, 0xee, 0x24, 0xa8, 0x26, 0xfc, 0x28, 0x32, 0x02,
-	0x52, 0x09, 0xed, 0xaa, 0x29, 0x20, 0x81, 0x44, 0xab, 0x65, 0x51, 0x4b, 0x04, 0x48, 0x55, 0x56,
-	0x7b, 0xc3, 0x4d, 0xe4, 0x8d, 0xa7, 0x61, 0xd4, 0xc4, 0x63, 0x3c, 0x0e, 0x15, 0x12, 0xcf, 0xc0,
-	0xb3, 0x70, 0xc1, 0x6b, 0xf0, 0x3c, 0xdc, 0xa2, 0xf9, 0xb3, 0x67, 0xbc, 0x76, 0x37, 0xb4, 0x52,
-	0xef, 0x72, 0xce, 0x9c, 0xf3, 0xcd, 0x37, 0xe7, 0xd7, 0x81, 0x7e, 0x42, 0xd3, 0x2c, 0xdc, 0x9e,
-	0x25, 0x29, 0xcd, 0x28, 0x72, 0x92, 0x9b, 0xe0, 0x02, 0x06, 0x57, 0x64, 0x13, 0x2f, 0xe2, 0x25,
-	0xfe, 0x75, 0x8f, 0x59, 0x86, 0xc6, 0xd0, 0xc2, 0xbb, 0x90, 0x6c, 0xfd, 0xc6, 0xb4, 0x31, 0xeb,
-	0x2e, 0xa5, 0x80, 0x26, 0xd0, 0x49, 0x42, 0xc6, 0x5e, 0xd2, 0x34, 0xf2, 0x1d, 0x71, 0x90, 0xcb,
-	0xc1, 0x77, 0x30, 0xd4, 0x10, 0x2c, 0xa1, 0x31, 0xc3, 0xe8, 0x1e, 0x78, 0x7b, 0x86, 0xd3, 0x15,
-	0x89, 0x14, 0x4a, 0x9b, 0x8b, 0x8b, 0x08, 0xbd, 0x0b, 0x1d, 0xc2, 0x56, 0x61, 0xb4, 0x23, 0xb1,
-	0xdf, 0x9c, 0x36, 0x66, 0x9d, 0xa5, 0x47, 0xd8, 0x05, 0x17, 0x83, 0x9f, 0x25, 0x91, 0xeb, 0xe4,
-	0xd5, 0x44, 0x0c, 0x68, 0xc7, 0x82, 0x36, 0x19, 0x36, 0x4b, 0x0c, 0xff, 0x71, 0xc0, 0xbd, 0x66,
-	0x38, 0xad, 0x27, 0xf6, 0x31, 0x0c, 0x9f, 0xd3, 0xed, 0x96, 0xbe, 0xc4, 0xe9, 0x6a, 0x4d, 0xf7,
-	0x71, 0x26, 0xd0, 0x07, 0xcb, 0x81, 0xd6, 0x5e, 0x72, 0x25, 0xfa, 0x14, 0x8e, 0xa5, 0x82, 0xc4,
-	0x1b, 0x65, 0xd7, 0x14, 0x76, 0xc3, 0x5c, 0x9d, 0x1b, 0x26, 0x29, 0x7d, 0x4e, 0xb6, 0x78, 0x95,
-	0x90, 0x75, 0xb6, 0x4f, 0xb1, 0xef, 0x4e, 0x1b, 0xb3, 0xfe, 0x72, 0xa8, 0xd4, 0xcf, 0xa4, 0x16,
-	0x21, 0x70, 0xe3, 0x70, 0x87, 0xfd, 0x96, 0xa0, 0x23, 0x7e, 0xa3, 0x29, 0xf4, 0x22, 0xcc, 0xd6,
-	0x29, 0x49, 0x32, 0x42, 0x63, 0xbf, 0x2d, 0x8e, 0x4c, 0x15, 0x7f, 0x2c, 0x27, 0x2e, 0x3c, 0x3d,
-	0xf9, 0x58, 0x2d, 0xa3, 0x0f, 0x00, 0x12, 0xca, 0x32, 0x45, 0xaf, 0x23, 0xe8, 0x75, 0xb9, 0x46,
-	0x32, 0xfb, 0x0c, 0xd0, 0x3a, 0xc5, 0x61, 0x86, 0xa3, 0x55, 0x98, 0xad, 0x18, 0x5e, 0xd3, 0x38,
-	0x62, 0x7e, 0x77, 0xda, 0x98, 0x79, 0xcb, 0x13, 0x75, 0x72, 0x91, 0x5d, 0x49, 0x7d, 0x91, 0x04,
-	0x30, 0x92, 0x10, 0xa4, 0x70, 0x7a, 0x29, 0x2c, 0x79, 0x50, 0x75, 0xbe, 0x6a, 0x63, 0x6b, 0x92,
-	0x75, 0x4a, 0x64, 0x73, 0xfc, 0xa6, 0x99, 0x64, 0x1d, 0x14, 0xb7, 0x08, 0x4a, 0x70, 0x1f, 0x86,
-	0x4f, 0x71, 0x76, 0xc8, 0x85, 0xc1, 0xb7, 0x30, 0x7a, 0x8a, 0xb3, 0x27, 0x2a, 0x73, 0xec, 0x4e,
-	0x82, 0x08, 0xdc, 0x24, 0xdc, 0x60, 0x95, 0x72, 0xf1, 0x3b, 0x78, 0x04, 0x63, 0x1b, 0x43, 0x95,
-	0xf6, 0x27, 0xd0, 0xd5, 0x25, 0xc1, 0xfc, 0xc6, 0xb4, 0x39, 0xeb, 0xcd, 0x3b, 0x67, 0xc9, 0xcd,
-	0x99, 0x20, 0x56, 0x1c, 0x59, 0x1c, 0x48, 0xbc, 0x79, 0x63, 0x0e, 0x02, 0xa3, 0xcc, 0x81, 0xc4,
-	0x9b, 0x3a, 0x0e, 0x24, 0xde, 0x04, 0x3f, 0xc0, 0x48, 0xa6, 0x49, 0x42, 0xdc, 0xc9, 0xe1, 0x3d,
-	0x8d, 0x5b, 0x74, 0x57, 0x47, 0x2a, 0x16, 0x51, 0x80, 0x61, 0x6c, 0x83, 0x29, 0x32, 0xef, 0x83,
-	0xcb, 0xdd, 0x05, 0x94, 0xc9, 0x43, 0x68, 0xd1, 0x39, 0x14, 0x9d, 0xb1, 0x12, 0x76, 0x4e, 0xc9,
-	0x6e, 0x90, 0x9f, 0x73, 0x31, 0xf8, 0xd3, 0x01, 0xf7, 0x19, 0x95, 0x2c, 0x45, 0x19, 0x17, 0x2c,
-	0xb9, 0xb8, 0x88, 0x90, 0x0f, 0x9e, 0x6e, 0x29, 0x47, 0xb4, 0x94, 0x16, 0x79, 0xe5, 0x6f, 0xc9,
-	0x0b, 0x6c, 0x35, 0x66, 0x97, 0x6b, 0x64, 0xe5, 0x9f, 0x41, 0x3f, 0xa3, 0xc9, 0x6a, 0x4d, 0x77,
-	0x3b, 0x1c, 0x67, 0xcc, 0x77, 0x45, 0xe4, 0x7a, 0x9c, 0xc9, 0xa5, 0xd4, 0x2d, 0x7b, 0x19, 0x4d,
-	0xd4, 0x6f, 0x86, 0x3e, 0x82, 0x81, 0xb2, 0x55, 0x88, 0x2d, 0x81, 0xd8, 0x57, 0x4a, 0x09, 0x6a,
-	0x04, 0xb3, 0x6d, 0x05, 0xd3, 0x07, 0x6f, 0x1d, 0xca, 0x06, 0x96, 0x1d, 0xaa, 0xc5, 0x9a, 0x0e,
-	0xec, 0x54, 0x77, 0x60, 0xf0, 0x57, 0x03, 0x3c, 0x45, 0x89, 0x3f, 0x50, 0x33, 0xca, 0xc3, 0xd2,
-	0x55, 0x9a, 0x45, 0x54, 0x3f, 0x1b, 0x4b, 0x03, 0xa5, 0x79, 0x7b, 0xa0, 0xd8, 0xa1, 0x73, 0xcb,
-	0xa1, 0xab, 0xa6, 0xdc, 0xaa, 0xa1, 0xfc, 0x13, 0xb8, 0x3f, 0x92, 0x17, 0xaf, 0x58, 0x03, 0xd5,
-	0x70, 0x4e, 0x0d, 0xdc, 0xef, 0x7a, 0xda, 0xf0, 0xba, 0x30, 0x8a, 0xf8, 0xff, 0x96, 0x87, 0x41,
-	0xa7, 0x59, 0x97, 0x2a, 0xd7, 0x4a, 0x55, 0x71, 0x35, 0x7f, 0xcf, 0xdb, 0xbd, 0xfa, 0x0f, 0xdd,
-	0x6f, 0xba, 0x36, 0xdf, 0xea, 0xed, 0x72, 0xda, 0x1e, 0x12, 0xf0, 0xe0, 0x1b, 0x61, 0xfa, 0x04,
-	0xe3, 0xe8, 0xb5, 0x86, 0xdc, 0x03, 0x38, 0xce, 0xdd, 0xd5, 0x48, 0xf9, 0x10, 0x5a, 0x1c, 0xdb,
-	0x9a, 0xaf, 0x82, 0x8a, 0x54, 0x07, 0x8f, 0xe0, 0x58, 0x37, 0xe9, 0x6b, 0x5d, 0x39, 0x87, 0x93,
-	0xc2, 0xff, 0xc0, 0x3b, 0x1f, 0xc3, 0x09, 0x17, 0x79, 0x1d, 0xb0, 0x3b, 0x53, 0x51, 0x75, 0xe9,
-	0xf7, 0x30, 0x52, 0x97, 0x5a, 0x18, 0x77, 0xb4, 0x74, 0x15, 0xd2, 0x39, 0x0c, 0x14, 0x44, 0xc1,
-	0x9d, 0xb7, 0xaa, 0xc5, 0x5d, 0x14, 0xac, 0x54, 0xcf, 0x29, 0x78, 0x17, 0xfb, 0xec, 0x97, 0xab,
-	0xdf, 0xd6, 0xe8, 0x01, 0xb4, 0xe5, 0xb7, 0x1a, 0x3a, 0xe5, 0x56, 0xd6, 0xa7, 0xdf, 0x04, 0x99,
-	0x2a, 0x89, 0x1d, 0x1c, 0x69, 0x97, 0xeb, 0xa4, 0x70, 0xc9, 0x3f, 0xd2, 0xaa, 0x5d, 0xe6, 0x7f,
-	0x3b, 0xe0, 0xf1, 0x69, 0xce, 0x6f, 0x3c, 0x07, 0x28, 0xbe, 0x15, 0xd0, 0x3b, 0x62, 0xda, 0x96,
-	0xbf, 0x1d, 0x26, 0xf9, 0x3a, 0x08, 0x8e, 0xd0, 0x7d, 0xf0, 0xd4, 0xa2, 0x47, 0x02, 0xdd, 0xde,
-	0xfa, 0x96, 0xe9, 0x25, 0xf4, 0xcd, 0x25, 0x8d, 0xee, 0x29, 0xfb, 0xf2, 0xea, 0x9f, 0xf8, 0xb7,
-	0x0f, 0xf2, 0xf7, 0x99, 0x20, 0x24, 0xde, 0x94, 0x40, 0x8a, 0xdd, 0x5d, 0x02, 0x31, 0x16, 0xb2,
-	0x04, 0x31, 0xb7, 0xa3, 0x04, 0xa9, 0x58, 0xbe, 0x12, 0xa4, 0x6a, 0x91, 0x06, 0x47, 0xf3, 0x7f,
-	0x9b, 0xe0, 0xf1, 0x22, 0xb3, 0xc2, 0x26, 0x96, 0xa1, 0x11, 0x36, 0xa3, 0x27, 0x27, 0x79, 0x95,
-	0x06, 0x47, 0xe8, 0x21, 0x0c, 0x0b, 0x03, 0x31, 0x7e, 0x0d, 0x27, 0x63, 0x7c, 0x59, 0x4e, 0x5f,
-	0xea, 0xf9, 0x66, 0x94, 0xe6, 0x21, 0x7e, 0x5f, 0xc0, 0xc0, 0xf2, 0x43, 0xc6, 0xb3, 0xec, 0x79,
-	0x65, 0xb9, 0xc9, 0xd4, 0x8a, 0x17, 0xe9, 0xd4, 0xd6, 0x3d, 0xe7, 0x73, 0x61, 0xca, 0xc7, 0x42,
-	0x6e, 0x6a, 0x8c, 0x98, 0xc9, 0xc8, 0xd2, 0xe5, 0x69, 0xf8, 0x4a, 0xe4, 0x32, 0x6f, 0x54, 0x34,
-	0xd6, 0x88, 0x66, 0xcf, 0x4d, 0x4e, 0x75, 0x83, 0x98, 0x65, 0xf0, 0x58, 0xcc, 0x21, 0xb3, 0x45,
-	0x55, 0x12, 0x6f, 0x37, 0x6d, 0x35, 0xc0, 0xd7, 0xd0, 0x2b, 0x00, 0x18, 0x1a, 0x19, 0xce, 0xb9,
-	0xe3, 0xd8, 0x56, 0x6a, 0xdf, 0x9b, 0xb6, 0xf8, 0x43, 0xf6, 0xf0, 0xbf, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xf4, 0xb3, 0xe1, 0xe8, 0xa0, 0x0d, 0x00, 0x00,
+	// 1281 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x58, 0xef, 0x6a, 0x1b, 0x47,
+	0x10, 0x97, 0x4e, 0x27, 0x9d, 0x34, 0x96, 0x14, 0x79, 0xe3, 0xd4, 0x67, 0x35, 0x29, 0x66, 0xdb,
+	0x34, 0x4e, 0x31, 0x0e, 0x55, 0xa0, 0xa1, 0xd0, 0x06, 0x1c, 0xd7, 0x36, 0xa6, 0x81, 0x18, 0x19,
+	0x41, 0x29, 0x05, 0x71, 0xd6, 0x6d, 0xd4, 0xc3, 0xd2, 0xed, 0xf5, 0x6e, 0x1d, 0x1b, 0xfa, 0xa1,
+	0x4f, 0xd0, 0x8f, 0x7d, 0x9c, 0x3e, 0x40, 0x1f, 0xa3, 0x6f, 0x52, 0xf6, 0xdf, 0xdd, 0xee, 0x59,
+	0xf2, 0xbf, 0xf4, 0xdb, 0xed, 0xec, 0xce, 0xcc, 0x6f, 0x66, 0x67, 0x7e, 0x3b, 0x12, 0xb4, 0x13,
+	0x9a, 0xb2, 0x60, 0xb6, 0x93, 0xa4, 0x94, 0x51, 0xe4, 0x24, 0xa7, 0x78, 0x17, 0x3a, 0x27, 0xd1,
+	0x34, 0x3e, 0x8a, 0x87, 0xe4, 0xb7, 0x73, 0x92, 0x31, 0xb4, 0x06, 0x75, 0x32, 0x0f, 0xa2, 0x99,
+	0x5f, 0xdd, 0xac, 0x6e, 0xb5, 0x86, 0x72, 0x81, 0xfa, 0xd0, 0x4c, 0x82, 0x2c, 0xbb, 0xa0, 0x69,
+	0xe8, 0x3b, 0x62, 0x23, 0x5f, 0xe3, 0x1f, 0xa0, 0xab, 0x4d, 0x64, 0x09, 0x8d, 0x33, 0x82, 0xd6,
+	0xc1, 0x3b, 0xcf, 0x48, 0x3a, 0x8e, 0x42, 0x65, 0xa5, 0xc1, 0x97, 0x47, 0x21, 0xda, 0x80, 0x66,
+	0x94, 0x8d, 0x83, 0x70, 0x1e, 0xc5, 0x7e, 0x6d, 0xb3, 0xba, 0xd5, 0x1c, 0x7a, 0x51, 0xb6, 0xcb,
+	0x97, 0xf8, 0x67, 0x09, 0x64, 0x94, 0x5c, 0x0f, 0xc4, 0x30, 0xed, 0x58, 0xa6, 0x4d, 0x84, 0xb5,
+	0x12, 0xc2, 0xbf, 0x1d, 0x70, 0x47, 0x19, 0x49, 0x97, 0x03, 0x7b, 0x0a, 0xdd, 0xf7, 0x74, 0x36,
+	0xa3, 0x17, 0x24, 0x1d, 0x4f, 0xe8, 0x79, 0xcc, 0x84, 0xf5, 0xce, 0xb0, 0xa3, 0xa5, 0x7b, 0x5c,
+	0x88, 0x9e, 0xc1, 0x03, 0x29, 0x88, 0xe2, 0xa9, 0x3a, 0x57, 0x13, 0xe7, 0xba, 0xb9, 0x58, 0x1e,
+	0x5c, 0x07, 0xef, 0x7d, 0x34, 0x23, 0xdc, 0x91, 0x2b, 0x1d, 0xf1, 0xe5, 0x51, 0x88, 0x10, 0xb8,
+	0x71, 0x30, 0x27, 0x7e, 0x5d, 0x48, 0xc5, 0x37, 0xda, 0x84, 0x95, 0x90, 0x64, 0x93, 0x34, 0x4a,
+	0x58, 0x44, 0x63, 0xbf, 0x21, 0xb6, 0x4c, 0x11, 0x0f, 0x8e, 0x03, 0x15, 0x9a, 0x9e, 0x0c, 0x4e,
+	0xaf, 0xd1, 0x13, 0x80, 0x84, 0x66, 0x4c, 0xc1, 0x69, 0x0a, 0x38, 0x2d, 0x2e, 0x91, 0x48, 0xb6,
+	0x01, 0x4d, 0x52, 0x12, 0x30, 0x12, 0x8e, 0x03, 0x36, 0xce, 0xc8, 0x84, 0xc6, 0x61, 0xe6, 0xb7,
+	0x36, 0xab, 0x5b, 0xde, 0xb0, 0xa7, 0x76, 0x76, 0xd9, 0x89, 0x94, 0x17, 0x49, 0x07, 0x23, 0xe9,
+	0x38, 0x85, 0xd5, 0x3d, 0x71, 0x92, 0x27, 0x51, 0xdf, 0xcf, 0xd2, 0x5c, 0x9a, 0x60, 0x9d, 0x12,
+	0xd8, 0xdc, 0x7e, 0xcd, 0xbc, 0x54, 0x9d, 0x14, 0xb7, 0x48, 0x0a, 0x7e, 0x0e, 0xdd, 0x43, 0xc2,
+	0x6e, 0xe3, 0x10, 0xbf, 0x81, 0x87, 0x87, 0x84, 0x1d, 0xa8, 0x9b, 0xca, 0x6e, 0x04, 0x88, 0xc0,
+	0x4d, 0x82, 0x29, 0x51, 0x57, 0x2c, 0xbe, 0xf1, 0x6b, 0x58, 0xb3, 0x6d, 0xa8, 0x52, 0xfe, 0x12,
+	0x5a, 0xba, 0x04, 0x32, 0xbf, 0xba, 0x59, 0xdb, 0x5a, 0x19, 0x34, 0x77, 0x92, 0xd3, 0x1d, 0x01,
+	0xac, 0xd8, 0xb2, 0x30, 0x44, 0xf1, 0xf4, 0xa3, 0x31, 0x08, 0x1b, 0x65, 0x0c, 0x51, 0x3c, 0x5d,
+	0x86, 0x21, 0x8a, 0xa7, 0x78, 0x1f, 0x3a, 0x52, 0xf9, 0x46, 0xef, 0x9f, 0x6a, 0x8b, 0x45, 0x1f,
+	0x35, 0xa5, 0xe0, 0x28, 0xc4, 0x63, 0xe8, 0x6a, 0x33, 0x0a, 0xc0, 0x63, 0x70, 0xb9, 0xa2, 0x30,
+	0x62, 0xfa, 0x16, 0x52, 0xf4, 0x02, 0x8a, 0xea, 0x1f, 0x8b, 0x73, 0x4e, 0xe9, 0x5c, 0x27, 0xdf,
+	0xe7, 0x4b, 0xfc, 0xa7, 0x03, 0xee, 0x31, 0x95, 0xf8, 0x44, 0xe9, 0x16, 0xf8, 0xf8, 0xf2, 0x28,
+	0x34, 0xdb, 0xc7, 0xb1, 0xda, 0xe7, 0x09, 0xc0, 0x2c, 0x3a, 0x23, 0x56, 0xef, 0xb5, 0xb8, 0x44,
+	0x16, 0xfb, 0x0e, 0xb4, 0x19, 0x4d, 0xc6, 0x13, 0x3a, 0x9f, 0x93, 0x98, 0x65, 0xbe, 0x2b, 0x92,
+	0xb5, 0xc2, 0x81, 0xec, 0x49, 0xd9, 0x70, 0x85, 0xd1, 0x44, 0x7d, 0x67, 0xe8, 0x73, 0xe8, 0xa8,
+	0xb3, 0xca, 0x62, 0x5d, 0x58, 0x6c, 0x2b, 0x61, 0xde, 0xcb, 0x3a, 0x8b, 0x0d, 0x2b, 0x8b, 0x3e,
+	0x78, 0x93, 0x40, 0xf6, 0xac, 0x6c, 0x4a, 0xbd, 0x5c, 0xd2, 0x74, 0xcd, 0xc5, 0x4d, 0x87, 0xff,
+	0xa9, 0x82, 0xa7, 0x20, 0xf1, 0x00, 0x35, 0xa2, 0x3c, 0x2b, 0x2d, 0x25, 0x91, 0x89, 0x59, 0x4c,
+	0x7f, 0x46, 0x2a, 0x6b, 0x56, 0x2a, 0x4b, 0xe4, 0xe2, 0x5e, 0x25, 0x17, 0x3b, 0xa7, 0xf5, 0x72,
+	0x4e, 0x17, 0xc7, 0xd2, 0x58, 0x12, 0xcb, 0x1f, 0xe0, 0xbe, 0x8d, 0xce, 0xc4, 0x13, 0x20, 0x8c,
+	0x16, 0x57, 0xcb, 0x97, 0xf7, 0x8a, 0x60, 0x31, 0x00, 0x77, 0x09, 0x80, 0x4b, 0xcd, 0x55, 0xbc,
+	0xc2, 0x8c, 0x46, 0xb8, 0x63, 0xa1, 0x19, 0x30, 0x6b, 0xcb, 0x2e, 0xdd, 0xb5, 0x2e, 0x1d, 0x9f,
+	0xc2, 0xa3, 0xc2, 0x33, 0x4f, 0x82, 0xe1, 0xfd, 0x7f, 0xca, 0x05, 0x3e, 0x03, 0x5f, 0xfa, 0x50,
+	0xf5, 0xf2, 0x71, 0x6e, 0xec, 0x62, 0xab, 0x95, 0x8a, 0x0d, 0xff, 0x0e, 0x6b, 0x96, 0xb3, 0x1b,
+	0xb3, 0x69, 0xdb, 0x73, 0xae, 0x29, 0xde, 0x5a, 0x99, 0x0c, 0x19, 0xb9, 0x64, 0x9a, 0xff, 0xf9,
+	0x37, 0xfe, 0x45, 0x67, 0x33, 0x77, 0x5e, 0x90, 0x11, 0x77, 0x67, 0x92, 0x91, 0xb8, 0x6a, 0x21,
+	0x45, 0x4f, 0xc1, 0x53, 0x0e, 0x15, 0x0b, 0x59, 0xcd, 0xaf, 0xf7, 0xd4, 0xeb, 0x72, 0x9b, 0x12,
+	0xc1, 0xaf, 0xe1, 0x81, 0x3a, 0x7a, 0xbf, 0x97, 0xe5, 0x1d, 0xf4, 0x0a, 0x7d, 0x15, 0xc3, 0x67,
+	0x50, 0xe7, 0xd6, 0xad, 0x17, 0x45, 0x80, 0x91, 0x62, 0xce, 0xcf, 0x31, 0xb9, 0x64, 0x63, 0xc3,
+	0x58, 0x93, 0x0b, 0x8e, 0xb9, 0xc1, 0x01, 0xac, 0x1e, 0x12, 0x56, 0xba, 0x93, 0xeb, 0x79, 0x03,
+	0xef, 0xc3, 0x27, 0x0a, 0x84, 0xe6, 0xbe, 0x1b, 0x2f, 0x73, 0x51, 0x2c, 0x3f, 0x41, 0xaf, 0xd0,
+	0x57, 0xb1, 0x3c, 0x83, 0x66, 0xce, 0xb7, 0xd5, 0xab, 0x7c, 0x9b, 0x6f, 0x5e, 0x1f, 0x94, 0x7c,
+	0x3f, 0x75, 0xe7, 0xdc, 0x0f, 0xdd, 0x8f, 0x22, 0x48, 0xa3, 0x33, 0xb2, 0xdb, 0x65, 0x67, 0xa1,
+	0xb1, 0xb7, 0xd0, 0x51, 0x26, 0x8a, 0x3b, 0xe3, 0xfd, 0x64, 0xdd, 0x99, 0x68, 0x3f, 0x29, 0xbe,
+	0x3e, 0xbc, 0x2f, 0xa0, 0x79, 0x10, 0xcd, 0xc8, 0x71, 0x90, 0x32, 0xc1, 0x20, 0x34, 0x66, 0xbc,
+	0x44, 0x39, 0x92, 0xf6, 0x50, 0x2f, 0xf1, 0x08, 0xda, 0xa3, 0x64, 0x46, 0x83, 0xf0, 0x84, 0x05,
+	0xec, 0x3c, 0x33, 0xd9, 0xa9, 0x6a, 0xb1, 0xd3, 0x36, 0x34, 0x32, 0x71, 0x44, 0x38, 0xea, 0x0e,
+	0xd6, 0xc4, 0x53, 0x6b, 0xa8, 0xee, 0xd1, 0x90, 0x0c, 0xd5, 0x99, 0xaf, 0x5e, 0x42, 0xaf, 0xbc,
+	0x87, 0x56, 0xc0, 0x1b, 0xc5, 0x67, 0x31, 0xbd, 0x88, 0x7b, 0x15, 0xd4, 0x00, 0xe7, 0xdd, 0x59,
+	0xaf, 0x8a, 0x00, 0x1a, 0x07, 0x41, 0x34, 0x23, 0x61, 0xcf, 0x19, 0x50, 0xf0, 0x76, 0xcf, 0xd9,
+	0xaf, 0x27, 0x1f, 0x26, 0xe8, 0x6b, 0x68, 0xc8, 0x01, 0x1f, 0xad, 0x72, 0x3f, 0xd6, 0xef, 0x85,
+	0x3e, 0x32, 0x45, 0x32, 0x55, 0xb8, 0xa2, 0x55, 0x46, 0x49, 0xa1, 0x92, 0x4f, 0xf6, 0x8b, 0x55,
+	0x06, 0xff, 0x3a, 0xe0, 0xf1, 0xf1, 0x80, 0x7b, 0x7c, 0x01, 0x50, 0x0c, 0x9c, 0xe8, 0x91, 0xa8,
+	0xa7, 0xf2, 0x00, 0xda, 0xcf, 0xe7, 0x0b, 0x5c, 0x41, 0xcf, 0xc1, 0x53, 0xd3, 0x22, 0x12, 0xd6,
+	0xed, 0xd1, 0xd1, 0x3a, 0xba, 0x07, 0x6d, 0x73, 0xd2, 0x43, 0xeb, 0xea, 0x7c, 0x79, 0x7e, 0xec,
+	0xfb, 0x57, 0x37, 0xf2, 0xf8, 0x4c, 0x23, 0x51, 0x3c, 0x2d, 0x19, 0x29, 0x06, 0xc0, 0x92, 0x11,
+	0x63, 0xaa, 0xc3, 0x15, 0xf4, 0x0a, 0xda, 0x32, 0x2a, 0xb9, 0x29, 0x53, 0x65, 0x4d, 0x70, 0x32,
+	0x55, 0xf6, 0x34, 0x26, 0x15, 0x87, 0x64, 0x4e, 0x3f, 0xdc, 0x55, 0x71, 0xf0, 0x57, 0x1d, 0x3c,
+	0xde, 0x63, 0x56, 0x8e, 0xc5, 0x28, 0x66, 0xe4, 0xd8, 0x60, 0xc5, 0x7e, 0xce, 0x4c, 0xc2, 0x6b,
+	0xd7, 0x7e, 0xdf, 0xd0, 0x86, 0xad, 0x64, 0x3c, 0x46, 0x96, 0xe2, 0x01, 0x74, 0x2c, 0x2a, 0x47,
+	0x7e, 0xa1, 0x67, 0xd3, 0x58, 0x7f, 0x63, 0xc1, 0x4e, 0x1e, 0xf6, 0xf7, 0xfa, 0x69, 0x37, 0x5a,
+	0x1c, 0x3d, 0xbe, 0xa2, 0xb1, 0x0c, 0x86, 0xac, 0x11, 0x11, 0xad, 0xae, 0x91, 0x65, 0xa1, 0x7e,
+	0x0b, 0xc0, 0x77, 0x53, 0xca, 0xfb, 0x0d, 0x3d, 0x34, 0x4e, 0xe7, 0xd5, 0xb1, 0x66, 0x0b, 0x73,
+	0x90, 0xdf, 0x08, 0x2f, 0x07, 0x84, 0x84, 0x77, 0xd3, 0xfb, 0x4e, 0x54, 0x54, 0x4e, 0x80, 0x79,
+	0x45, 0x95, 0x29, 0xb1, 0xbf, 0xaa, 0x89, 0xc7, 0xd4, 0xde, 0xcf, 0x1f, 0xa9, 0x7c, 0xb6, 0xed,
+	0x1b, 0x06, 0x4a, 0xa4, 0x2f, 0x41, 0x94, 0x99, 0x1c, 0x57, 0xd0, 0x1b, 0x61, 0xc6, 0x64, 0xd0,
+	0xdc, 0xcc, 0x02, 0x5a, 0x5d, 0x0c, 0x65, 0x20, 0x72, 0xa7, 0xaf, 0xfa, 0x91, 0xad, 0xae, 0x35,
+	0xcd, 0x27, 0x02, 0x57, 0x06, 0xaf, 0xc0, 0xe3, 0xf4, 0xc8, 0xcb, 0x72, 0x1b, 0x1a, 0x92, 0xac,
+	0x50, 0x5b, 0x94, 0xb0, 0x62, 0xcd, 0x7e, 0xaf, 0x4c, 0x71, 0xb8, 0xb2, 0x55, 0x3d, 0x6d, 0x88,
+	0x7f, 0x32, 0x5e, 0xfe, 0x17, 0x00, 0x00, 0xff, 0xff, 0xad, 0x08, 0x2c, 0xf7, 0xd9, 0x10, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1621,7 +1939,8 @@ type UserSvcClient interface {
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
 	GetFollowers(ctx context.Context, in *GetFollowersRequest, opts ...grpc.CallOption) (*GetFollowersResponse, error)
 	GetFollowing(ctx context.Context, in *GetFollowingRequest, opts ...grpc.CallOption) (*GetFollowingResponse, error)
-	CreateFollow(ctx context.Context, in *CreateFollowRequest, opts ...grpc.CallOption) (*CreateFollowResponse, error)
+	CreateFollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
+	RemoveFollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 }
 
 type userSvcClient struct {
@@ -1668,9 +1987,18 @@ func (c *userSvcClient) GetFollowing(ctx context.Context, in *GetFollowingReques
 	return out, nil
 }
 
-func (c *userSvcClient) CreateFollow(ctx context.Context, in *CreateFollowRequest, opts ...grpc.CallOption) (*CreateFollowResponse, error) {
-	out := new(CreateFollowResponse)
+func (c *userSvcClient) CreateFollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error) {
+	out := new(FollowResponse)
 	err := c.cc.Invoke(ctx, "/pb.UserSvc/CreateFollow", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userSvcClient) RemoveFollow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error) {
+	out := new(FollowResponse)
+	err := c.cc.Invoke(ctx, "/pb.UserSvc/RemoveFollow", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1683,7 +2011,8 @@ type UserSvcServer interface {
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	GetFollowers(context.Context, *GetFollowersRequest) (*GetFollowersResponse, error)
 	GetFollowing(context.Context, *GetFollowingRequest) (*GetFollowingResponse, error)
-	CreateFollow(context.Context, *CreateFollowRequest) (*CreateFollowResponse, error)
+	CreateFollow(context.Context, *FollowRequest) (*FollowResponse, error)
+	RemoveFollow(context.Context, *FollowRequest) (*FollowResponse, error)
 }
 
 // UnimplementedUserSvcServer can be embedded to have forward compatible implementations.
@@ -1702,8 +2031,11 @@ func (*UnimplementedUserSvcServer) GetFollowers(ctx context.Context, req *GetFol
 func (*UnimplementedUserSvcServer) GetFollowing(ctx context.Context, req *GetFollowingRequest) (*GetFollowingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFollowing not implemented")
 }
-func (*UnimplementedUserSvcServer) CreateFollow(ctx context.Context, req *CreateFollowRequest) (*CreateFollowResponse, error) {
+func (*UnimplementedUserSvcServer) CreateFollow(ctx context.Context, req *FollowRequest) (*FollowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFollow not implemented")
+}
+func (*UnimplementedUserSvcServer) RemoveFollow(ctx context.Context, req *FollowRequest) (*FollowResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveFollow not implemented")
 }
 
 func RegisterUserSvcServer(s *grpc.Server, srv UserSvcServer) {
@@ -1783,7 +2115,7 @@ func _UserSvc_GetFollowing_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _UserSvc_CreateFollow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateFollowRequest)
+	in := new(FollowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1795,7 +2127,25 @@ func _UserSvc_CreateFollow_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/pb.UserSvc/CreateFollow",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserSvcServer).CreateFollow(ctx, req.(*CreateFollowRequest))
+		return srv.(UserSvcServer).CreateFollow(ctx, req.(*FollowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserSvc_RemoveFollow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FollowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserSvcServer).RemoveFollow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.UserSvc/RemoveFollow",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserSvcServer).RemoveFollow(ctx, req.(*FollowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1824,6 +2174,10 @@ var _UserSvc_serviceDesc = grpc.ServiceDesc{
 			MethodName: "CreateFollow",
 			Handler:    _UserSvc_CreateFollow_Handler,
 		},
+		{
+			MethodName: "RemoveFollow",
+			Handler:    _UserSvc_RemoveFollow_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "portal.proto",
@@ -1834,14 +2188,16 @@ var _UserSvc_serviceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PostSvcClient interface {
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*Post, error)
-	CreatePostLike(ctx context.Context, in *CreateLikeRequest, opts ...grpc.CallOption) (*Post, error)
-	CreateCommentLike(ctx context.Context, in *CreateLikeRequest, opts ...grpc.CallOption) (*Post, error)
-	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*Post, error)
+	CreatePostLike(ctx context.Context, in *CreatePostLikeRequest, opts ...grpc.CallOption) (*Post, error)
+	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error)
+	CreateCommentLike(ctx context.Context, in *CreateCommentLikeRequest, opts ...grpc.CallOption) (*Post, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*Post, error)
-	GetFeed(ctx context.Context, in *GetFeedRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
-	GetPostLikes(ctx context.Context, in *PostLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error)
-	GetCommentLikes(ctx context.Context, in *CommentLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error)
-	GetComments(ctx context.Context, in *CommentsRequest, opts ...grpc.CallOption) (*CommentsResponse, error)
+	GetProfile(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error)
+	GetFeed(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error)
+	GetPostLikes(ctx context.Context, in *GetPostLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error)
+	GetPostComments(ctx context.Context, in *GetPostCommentsRequest, opts ...grpc.CallOption) (*CommentsResponse, error)
+	GetCommentLikes(ctx context.Context, in *GetCommentLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error)
+	GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*Comment, error)
 }
 
 type postSvcClient struct {
@@ -1861,7 +2217,7 @@ func (c *postSvcClient) CreatePost(ctx context.Context, in *CreatePostRequest, o
 	return out, nil
 }
 
-func (c *postSvcClient) CreatePostLike(ctx context.Context, in *CreateLikeRequest, opts ...grpc.CallOption) (*Post, error) {
+func (c *postSvcClient) CreatePostLike(ctx context.Context, in *CreatePostLikeRequest, opts ...grpc.CallOption) (*Post, error) {
 	out := new(Post)
 	err := c.cc.Invoke(ctx, "/pb.PostSvc/CreatePostLike", in, out, opts...)
 	if err != nil {
@@ -1870,18 +2226,18 @@ func (c *postSvcClient) CreatePostLike(ctx context.Context, in *CreateLikeReques
 	return out, nil
 }
 
-func (c *postSvcClient) CreateCommentLike(ctx context.Context, in *CreateLikeRequest, opts ...grpc.CallOption) (*Post, error) {
-	out := new(Post)
-	err := c.cc.Invoke(ctx, "/pb.PostSvc/CreateCommentLike", in, out, opts...)
+func (c *postSvcClient) CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error) {
+	out := new(CreateCommentResponse)
+	err := c.cc.Invoke(ctx, "/pb.PostSvc/CreateComment", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *postSvcClient) CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*Post, error) {
+func (c *postSvcClient) CreateCommentLike(ctx context.Context, in *CreateCommentLikeRequest, opts ...grpc.CallOption) (*Post, error) {
 	out := new(Post)
-	err := c.cc.Invoke(ctx, "/pb.PostSvc/CreateComment", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/pb.PostSvc/CreateCommentLike", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1897,8 +2253,17 @@ func (c *postSvcClient) GetPost(ctx context.Context, in *GetPostRequest, opts ..
 	return out, nil
 }
 
-func (c *postSvcClient) GetFeed(ctx context.Context, in *GetFeedRequest, opts ...grpc.CallOption) (*GetFeedResponse, error) {
-	out := new(GetFeedResponse)
+func (c *postSvcClient) GetProfile(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error) {
+	out := new(GetPostsResponse)
+	err := c.cc.Invoke(ctx, "/pb.PostSvc/GetProfile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postSvcClient) GetFeed(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error) {
+	out := new(GetPostsResponse)
 	err := c.cc.Invoke(ctx, "/pb.PostSvc/GetFeed", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1906,7 +2271,7 @@ func (c *postSvcClient) GetFeed(ctx context.Context, in *GetFeedRequest, opts ..
 	return out, nil
 }
 
-func (c *postSvcClient) GetPostLikes(ctx context.Context, in *PostLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error) {
+func (c *postSvcClient) GetPostLikes(ctx context.Context, in *GetPostLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error) {
 	out := new(LikesResponse)
 	err := c.cc.Invoke(ctx, "/pb.PostSvc/GetPostLikes", in, out, opts...)
 	if err != nil {
@@ -1915,7 +2280,16 @@ func (c *postSvcClient) GetPostLikes(ctx context.Context, in *PostLikesRequest, 
 	return out, nil
 }
 
-func (c *postSvcClient) GetCommentLikes(ctx context.Context, in *CommentLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error) {
+func (c *postSvcClient) GetPostComments(ctx context.Context, in *GetPostCommentsRequest, opts ...grpc.CallOption) (*CommentsResponse, error) {
+	out := new(CommentsResponse)
+	err := c.cc.Invoke(ctx, "/pb.PostSvc/GetPostComments", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postSvcClient) GetCommentLikes(ctx context.Context, in *GetCommentLikesRequest, opts ...grpc.CallOption) (*LikesResponse, error) {
 	out := new(LikesResponse)
 	err := c.cc.Invoke(ctx, "/pb.PostSvc/GetCommentLikes", in, out, opts...)
 	if err != nil {
@@ -1924,9 +2298,9 @@ func (c *postSvcClient) GetCommentLikes(ctx context.Context, in *CommentLikesReq
 	return out, nil
 }
 
-func (c *postSvcClient) GetComments(ctx context.Context, in *CommentsRequest, opts ...grpc.CallOption) (*CommentsResponse, error) {
-	out := new(CommentsResponse)
-	err := c.cc.Invoke(ctx, "/pb.PostSvc/GetComments", in, out, opts...)
+func (c *postSvcClient) GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*Comment, error) {
+	out := new(Comment)
+	err := c.cc.Invoke(ctx, "/pb.PostSvc/GetComment", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1936,14 +2310,16 @@ func (c *postSvcClient) GetComments(ctx context.Context, in *CommentsRequest, op
 // PostSvcServer is the server API for PostSvc service.
 type PostSvcServer interface {
 	CreatePost(context.Context, *CreatePostRequest) (*Post, error)
-	CreatePostLike(context.Context, *CreateLikeRequest) (*Post, error)
-	CreateCommentLike(context.Context, *CreateLikeRequest) (*Post, error)
-	CreateComment(context.Context, *CreateCommentRequest) (*Post, error)
+	CreatePostLike(context.Context, *CreatePostLikeRequest) (*Post, error)
+	CreateComment(context.Context, *CreateCommentRequest) (*CreateCommentResponse, error)
+	CreateCommentLike(context.Context, *CreateCommentLikeRequest) (*Post, error)
 	GetPost(context.Context, *GetPostRequest) (*Post, error)
-	GetFeed(context.Context, *GetFeedRequest) (*GetFeedResponse, error)
-	GetPostLikes(context.Context, *PostLikesRequest) (*LikesResponse, error)
-	GetCommentLikes(context.Context, *CommentLikesRequest) (*LikesResponse, error)
-	GetComments(context.Context, *CommentsRequest) (*CommentsResponse, error)
+	GetProfile(context.Context, *GetPostsRequest) (*GetPostsResponse, error)
+	GetFeed(context.Context, *GetPostsRequest) (*GetPostsResponse, error)
+	GetPostLikes(context.Context, *GetPostLikesRequest) (*LikesResponse, error)
+	GetPostComments(context.Context, *GetPostCommentsRequest) (*CommentsResponse, error)
+	GetCommentLikes(context.Context, *GetCommentLikesRequest) (*LikesResponse, error)
+	GetComment(context.Context, *GetCommentRequest) (*Comment, error)
 }
 
 // UnimplementedPostSvcServer can be embedded to have forward compatible implementations.
@@ -1953,29 +2329,35 @@ type UnimplementedPostSvcServer struct {
 func (*UnimplementedPostSvcServer) CreatePost(ctx context.Context, req *CreatePostRequest) (*Post, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePost not implemented")
 }
-func (*UnimplementedPostSvcServer) CreatePostLike(ctx context.Context, req *CreateLikeRequest) (*Post, error) {
+func (*UnimplementedPostSvcServer) CreatePostLike(ctx context.Context, req *CreatePostLikeRequest) (*Post, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePostLike not implemented")
 }
-func (*UnimplementedPostSvcServer) CreateCommentLike(ctx context.Context, req *CreateLikeRequest) (*Post, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCommentLike not implemented")
-}
-func (*UnimplementedPostSvcServer) CreateComment(ctx context.Context, req *CreateCommentRequest) (*Post, error) {
+func (*UnimplementedPostSvcServer) CreateComment(ctx context.Context, req *CreateCommentRequest) (*CreateCommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateComment not implemented")
+}
+func (*UnimplementedPostSvcServer) CreateCommentLike(ctx context.Context, req *CreateCommentLikeRequest) (*Post, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCommentLike not implemented")
 }
 func (*UnimplementedPostSvcServer) GetPost(ctx context.Context, req *GetPostRequest) (*Post, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPost not implemented")
 }
-func (*UnimplementedPostSvcServer) GetFeed(ctx context.Context, req *GetFeedRequest) (*GetFeedResponse, error) {
+func (*UnimplementedPostSvcServer) GetProfile(ctx context.Context, req *GetPostsRequest) (*GetPostsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProfile not implemented")
+}
+func (*UnimplementedPostSvcServer) GetFeed(ctx context.Context, req *GetPostsRequest) (*GetPostsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFeed not implemented")
 }
-func (*UnimplementedPostSvcServer) GetPostLikes(ctx context.Context, req *PostLikesRequest) (*LikesResponse, error) {
+func (*UnimplementedPostSvcServer) GetPostLikes(ctx context.Context, req *GetPostLikesRequest) (*LikesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostLikes not implemented")
 }
-func (*UnimplementedPostSvcServer) GetCommentLikes(ctx context.Context, req *CommentLikesRequest) (*LikesResponse, error) {
+func (*UnimplementedPostSvcServer) GetPostComments(ctx context.Context, req *GetPostCommentsRequest) (*CommentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostComments not implemented")
+}
+func (*UnimplementedPostSvcServer) GetCommentLikes(ctx context.Context, req *GetCommentLikesRequest) (*LikesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommentLikes not implemented")
 }
-func (*UnimplementedPostSvcServer) GetComments(ctx context.Context, req *CommentsRequest) (*CommentsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetComments not implemented")
+func (*UnimplementedPostSvcServer) GetComment(ctx context.Context, req *GetCommentRequest) (*Comment, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetComment not implemented")
 }
 
 func RegisterPostSvcServer(s *grpc.Server, srv PostSvcServer) {
@@ -2001,7 +2383,7 @@ func _PostSvc_CreatePost_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _PostSvc_CreatePostLike_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateLikeRequest)
+	in := new(CreatePostLikeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2013,25 +2395,7 @@ func _PostSvc_CreatePostLike_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/pb.PostSvc/CreatePostLike",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostSvcServer).CreatePostLike(ctx, req.(*CreateLikeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PostSvc_CreateCommentLike_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateLikeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PostSvcServer).CreateCommentLike(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pb.PostSvc/CreateCommentLike",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostSvcServer).CreateCommentLike(ctx, req.(*CreateLikeRequest))
+		return srv.(PostSvcServer).CreatePostLike(ctx, req.(*CreatePostLikeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2054,6 +2418,24 @@ func _PostSvc_CreateComment_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostSvc_CreateCommentLike_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCommentLikeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostSvcServer).CreateCommentLike(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.PostSvc/CreateCommentLike",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostSvcServer).CreateCommentLike(ctx, req.(*CreateCommentLikeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PostSvc_GetPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPostRequest)
 	if err := dec(in); err != nil {
@@ -2072,8 +2454,26 @@ func _PostSvc_GetPost_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostSvc_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostSvcServer).GetProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.PostSvc/GetProfile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostSvcServer).GetProfile(ctx, req.(*GetPostsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PostSvc_GetFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetFeedRequest)
+	in := new(GetPostsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2085,13 +2485,13 @@ func _PostSvc_GetFeed_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/pb.PostSvc/GetFeed",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostSvcServer).GetFeed(ctx, req.(*GetFeedRequest))
+		return srv.(PostSvcServer).GetFeed(ctx, req.(*GetPostsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _PostSvc_GetPostLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PostLikesRequest)
+	in := new(GetPostLikesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2103,13 +2503,31 @@ func _PostSvc_GetPostLikes_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/pb.PostSvc/GetPostLikes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostSvcServer).GetPostLikes(ctx, req.(*PostLikesRequest))
+		return srv.(PostSvcServer).GetPostLikes(ctx, req.(*GetPostLikesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostSvc_GetPostComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostCommentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostSvcServer).GetPostComments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.PostSvc/GetPostComments",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostSvcServer).GetPostComments(ctx, req.(*GetPostCommentsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _PostSvc_GetCommentLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CommentLikesRequest)
+	in := new(GetCommentLikesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2121,25 +2539,25 @@ func _PostSvc_GetCommentLikes_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/pb.PostSvc/GetCommentLikes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostSvcServer).GetCommentLikes(ctx, req.(*CommentLikesRequest))
+		return srv.(PostSvcServer).GetCommentLikes(ctx, req.(*GetCommentLikesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PostSvc_GetComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CommentsRequest)
+func _PostSvc_GetComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCommentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PostSvcServer).GetComments(ctx, in)
+		return srv.(PostSvcServer).GetComment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.PostSvc/GetComments",
+		FullMethod: "/pb.PostSvc/GetComment",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostSvcServer).GetComments(ctx, req.(*CommentsRequest))
+		return srv.(PostSvcServer).GetComment(ctx, req.(*GetCommentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2157,16 +2575,20 @@ var _PostSvc_serviceDesc = grpc.ServiceDesc{
 			Handler:    _PostSvc_CreatePostLike_Handler,
 		},
 		{
-			MethodName: "CreateCommentLike",
-			Handler:    _PostSvc_CreateCommentLike_Handler,
-		},
-		{
 			MethodName: "CreateComment",
 			Handler:    _PostSvc_CreateComment_Handler,
 		},
 		{
+			MethodName: "CreateCommentLike",
+			Handler:    _PostSvc_CreateCommentLike_Handler,
+		},
+		{
 			MethodName: "GetPost",
 			Handler:    _PostSvc_GetPost_Handler,
+		},
+		{
+			MethodName: "GetProfile",
+			Handler:    _PostSvc_GetProfile_Handler,
 		},
 		{
 			MethodName: "GetFeed",
@@ -2177,14 +2599,124 @@ var _PostSvc_serviceDesc = grpc.ServiceDesc{
 			Handler:    _PostSvc_GetPostLikes_Handler,
 		},
 		{
+			MethodName: "GetPostComments",
+			Handler:    _PostSvc_GetPostComments_Handler,
+		},
+		{
 			MethodName: "GetCommentLikes",
 			Handler:    _PostSvc_GetCommentLikes_Handler,
 		},
 		{
-			MethodName: "GetComments",
-			Handler:    _PostSvc_GetComments_Handler,
+			MethodName: "GetComment",
+			Handler:    _PostSvc_GetComment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
+	Metadata: "portal.proto",
+}
+
+// FileSvcClient is the client API for FileSvc service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type FileSvcClient interface {
+	Upload(ctx context.Context, opts ...grpc.CallOption) (FileSvc_UploadClient, error)
+}
+
+type fileSvcClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewFileSvcClient(cc *grpc.ClientConn) FileSvcClient {
+	return &fileSvcClient{cc}
+}
+
+func (c *fileSvcClient) Upload(ctx context.Context, opts ...grpc.CallOption) (FileSvc_UploadClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_FileSvc_serviceDesc.Streams[0], "/pb.FileSvc/Upload", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &fileSvcUploadClient{stream}
+	return x, nil
+}
+
+type FileSvc_UploadClient interface {
+	Send(*FilePart) error
+	CloseAndRecv() (*UploadStatus, error)
+	grpc.ClientStream
+}
+
+type fileSvcUploadClient struct {
+	grpc.ClientStream
+}
+
+func (x *fileSvcUploadClient) Send(m *FilePart) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *fileSvcUploadClient) CloseAndRecv() (*UploadStatus, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(UploadStatus)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// FileSvcServer is the server API for FileSvc service.
+type FileSvcServer interface {
+	Upload(FileSvc_UploadServer) error
+}
+
+// UnimplementedFileSvcServer can be embedded to have forward compatible implementations.
+type UnimplementedFileSvcServer struct {
+}
+
+func (*UnimplementedFileSvcServer) Upload(srv FileSvc_UploadServer) error {
+	return status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
+
+func RegisterFileSvcServer(s *grpc.Server, srv FileSvcServer) {
+	s.RegisterService(&_FileSvc_serviceDesc, srv)
+}
+
+func _FileSvc_Upload_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(FileSvcServer).Upload(&fileSvcUploadServer{stream})
+}
+
+type FileSvc_UploadServer interface {
+	SendAndClose(*UploadStatus) error
+	Recv() (*FilePart, error)
+	grpc.ServerStream
+}
+
+type fileSvcUploadServer struct {
+	grpc.ServerStream
+}
+
+func (x *fileSvcUploadServer) SendAndClose(m *UploadStatus) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *fileSvcUploadServer) Recv() (*FilePart, error) {
+	m := new(FilePart)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+var _FileSvc_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "pb.FileSvc",
+	HandlerType: (*FileSvcServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Upload",
+			Handler:       _FileSvc_Upload_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "portal.proto",
 }

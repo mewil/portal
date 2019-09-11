@@ -18,7 +18,7 @@ type Logger interface {
 
 const stdOut = "stdout"
 
-func NewLogger() (Logger, error) {
+func NewLogger(named string) (Logger, error) {
 	cfg := zap.Config{
 		Encoding:         "json",
 		Level:            zap.NewAtomicLevelAt(zapcore.DebugLevel),
@@ -38,5 +38,5 @@ func NewLogger() (Logger, error) {
 	if err != nil {
 		return nil, err
 	}
-	return logger.Sugar().Named("main"), nil
+	return logger.Sugar().Named(named), nil
 }

@@ -7,10 +7,13 @@ require (
 	github.com/didip/tollbooth v4.0.2+incompatible // indirect
 	github.com/didip/tollbooth_gin v0.0.0-20170928041415-5752492be505 // indirect
 	github.com/gin-gonic/gin v1.4.0 // indirect
-	github.com/google/uuid v1.1.1 // indirect
+	github.com/go-sql-driver/mysql v1.4.1 // indirect
+	github.com/google/uuid v1.1.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
+	github.com/mewil/portal/common/database v0.0.0
 	github.com/mewil/portal/common/grpc_utils v0.0.0
 	github.com/mewil/portal/common/logger v0.0.0
+	github.com/mewil/portal/common/validation v0.0.0
 	github.com/mewil/portal/pb v0.0.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	go.uber.org/zap v1.10.0
@@ -22,5 +25,9 @@ require (
 replace github.com/mewil/portal/common/logger v0.0.0 => ../common/logger
 
 replace github.com/mewil/portal/common/grpc_utils v0.0.0 => ../common/grpc_utils
+
+replace github.com/mewil/portal/common/database v0.0.0 => ../common/database
+
+replace github.com/mewil/portal/common/validation v0.0.0 => ../common/validation
 
 replace github.com/mewil/portal/pb v0.0.0 => ../pb

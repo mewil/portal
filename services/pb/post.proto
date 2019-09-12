@@ -1,7 +1,9 @@
 syntax = "proto3";
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 package pb;
+
+import "google/protobuf/timestamp.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 // PostService ----------------------------------------------------------------
 
@@ -33,7 +35,7 @@ message Post {
     uint32 CommentCount = 5 [(gogoproto.jsontag) = "comment_count"];
     string UserID = 6 [(gogoproto.jsontag) = "user_id"];
     string Caption = 7 [(gogoproto.jsontag) = "caption"];
-    fixed32 CreatedAtSeconds = 8 [(gogoproto.jsontag) = "created_at_seconds"];
+    google.protobuf.Timestamp CreatedAt = 8 [(gogoproto.jsontag) = "created_at", (gogoproto.stdtime) = true];
 }
 
 message Comment {
@@ -42,21 +44,21 @@ message Comment {
     string PostID = 3 [(gogoproto.jsontag) = "post_id"];
     string Text = 4 [(gogoproto.jsontag) = "text"];
     uint32 LikeCount = 5 [(gogoproto.jsontag) = "like_count"];
-    fixed32 CreatedAtSeconds = 6 [(gogoproto.jsontag) = "created_at_seconds"];
+    google.protobuf.Timestamp CreatedAt = 6 [(gogoproto.jsontag) = "created_at", (gogoproto.stdtime) = true];
 }
 
 message PostLike {
     string LikeID = 1 [(gogoproto.jsontag) = "like_id"];
     string UserID = 2 [(gogoproto.jsontag) = "user_id"];
     string PostID = 3 [(gogoproto.jsontag) = "post_id"];
-    fixed32 CreatedAtSeconds = 4 [(gogoproto.jsontag) = "created_at_seconds"];
+    google.protobuf.Timestamp CreatedAt = 4 [(gogoproto.jsontag) = "created_at", (gogoproto.stdtime) = true];
 }
 
 message CommentLike {
     string LikeID = 1 [(gogoproto.jsontag) = "like_id"];
     string UserID = 2 [(gogoproto.jsontag) = "user_id"];
     string CommentID = 3 [(gogoproto.jsontag) = "comment_id"];
-    fixed32 CreatedAtSeconds = 4 [(gogoproto.jsontag) = "created_at_seconds"];
+    google.protobuf.Timestamp CreatedAt = 4 [(gogoproto.jsontag) = "created_at", (gogoproto.stdtime) = true];
 }
 
 message CreatePostRequest {

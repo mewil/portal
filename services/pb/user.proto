@@ -1,0 +1,63 @@
+syntax = "proto3";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+package pb;
+
+// UserService ----------------------------------------------------------------
+
+service UserSvc {
+    rpc CreateUser(CreateUserRequest) returns (User) {}
+    rpc GetUser(GetUserRequest) returns (User) {}
+    rpc GetFollowers(GetFollowersRequest) returns (GetFollowersResponse) {}
+    rpc GetFollowing(GetFollowingRequest) returns (GetFollowingResponse) {}
+    rpc CreateFollow(FollowRequest) returns (FollowResponse) {}
+    rpc RemoveFollow(FollowRequest) returns (FollowResponse) {}
+}
+
+message User {
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    uint32 FollowerCount = 2 [(gogoproto.jsontag) = "follower_count"];
+    uint32 FollowingCount = 3 [(gogoproto.jsontag) = "following_count"];
+    string FileID = 4 [(gogoproto.jsontag) = "file_id"];
+    string Name = 5 [(gogoproto.jsontag) = "name"];
+    string Description = 6 [(gogoproto.jsontag) = "description"];
+    string Username = 7 [(gogoproto.jsontag) = "username"];
+}
+
+message CreateUserRequest {
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    string Username = 2 [(gogoproto.jsontag) = "username"];
+    string Email = 3 [(gogoproto.jsontag) = "email"];
+}
+
+message GetUserRequest {
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+}
+
+message GetFollowersRequest {
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
+}
+
+message GetFollowersResponse {
+    repeated User Followers = 1 [(gogoproto.jsontag) = "followers"];
+}
+
+message GetFollowingRequest {
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
+}
+
+message GetFollowingResponse {
+    repeated User Following = 1 [(gogoproto.jsontag) = "following"];
+}
+
+message FollowRequest {
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    string FollowID = 2 [(gogoproto.jsontag) = "follow_id"];
+}
+
+message FollowResponse {
+    User User = 1 [(gogoproto.jsontag) = "user"];
+    User FollowUser = 2 [(gogoproto.jsontag) = "follow_user"];
+}

@@ -1,0 +1,25 @@
+syntax = "proto3";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+package pb;
+
+// FileService ----------------------------------------------------------------
+
+service FileSvc {
+    rpc Upload(stream FilePart) returns (UploadStatus) {}
+}
+
+message FilePart {
+    bytes Content = 1 [(gogoproto.jsontag) = "content"];
+}
+
+enum UploadStatusCode {
+    Unknown = 0;
+    Ok = 1;
+    Failed = 2;
+}
+
+message UploadStatus {
+    string FileID = 1 [(gogoproto.jsontag) = "file_id"];
+    UploadStatusCode Status = 2 [(gogoproto.jsontag) = "status"];
+}

@@ -1,0 +1,27 @@
+syntax = "proto3";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+package pb;
+
+// AuthService ----------------------------------------------------------------
+
+service AuthSvc {
+    rpc SignIn(SignInRequest) returns (SignInResponse) {}
+    rpc SignUp(SignUpRequest) returns (SignInResponse) {}
+}
+
+message SignInRequest {
+    string Email = 1 [(gogoproto.jsontag) = "email"];
+    string Password = 2 [(gogoproto.jsontag) = "password"];
+}
+
+message SignInResponse {
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    bool IsAdmin = 2 [(gogoproto.jsontag) = "is_admin"];
+}
+
+message SignUpRequest {
+    string Email = 1 [(gogoproto.jsontag) = "email"];
+    string UserID = 2 [(gogoproto.jsontag) = "user_id"];
+    string Password = 3 [(gogoproto.jsontag) = "password"];
+}

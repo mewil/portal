@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 package pb;
 
@@ -10,19 +11,19 @@ service AuthSvc {
 }
 
 message SignInRequest {
-    string email = 1;
-    string password = 2;
+    string Email = 1 [(gogoproto.jsontag) = "email"];
+    string Password = 2 [(gogoproto.jsontag) = "password"];
 }
 
 message SignInResponse {
-    string user_id = 1;
-    bool is_admin = 3;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    bool IsAdmin = 2 [(gogoproto.jsontag) = "is_admin"];
 }
 
 message SignUpRequest {
-    string email = 1;
-    string user_id = 2;
-    string password = 3;
+    string Email = 1 [(gogoproto.jsontag) = "email"];
+    string UserID = 2 [(gogoproto.jsontag) = "user_id"];
+    string Password = 3 [(gogoproto.jsontag) = "password"];
 }
 
 // UserService ----------------------------------------------------------------
@@ -37,55 +38,51 @@ service UserSvc {
 }
 
 message User {
-    string user_id = 1;
-    uint32 follower_count = 2;
-    uint32 following_count = 3;
-    string file_id = 4;
-    string name = 5;
-    string description = 6;
-    string username = 7;
-    uint32 post_count = 8;
-    fixed32 created_at_seconds = 9;
-    string email = 10;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    uint32 FollowerCount = 2 [(gogoproto.jsontag) = "follower_count"];
+    uint32 FollowingCount = 3 [(gogoproto.jsontag) = "following_count"];
+    string FileID = 4 [(gogoproto.jsontag) = "file_id"];
+    string Name = 5 [(gogoproto.jsontag) = "name"];
+    string Description = 6 [(gogoproto.jsontag) = "description"];
+    string Username = 7 [(gogoproto.jsontag) = "username"];
 }
 
 message CreateUserRequest {
-    string user_id = 1;
-    string username = 2;
-    string email = 3;
-    string name = 4;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    string Username = 2 [(gogoproto.jsontag) = "username"];
+    string Email = 3 [(gogoproto.jsontag) = "email"];
 }
 
 message GetUserRequest {
-    string user_id = 1;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
 }
 
 message GetFollowersRequest {
-    string user_id = 1;
-    uint32 page = 2;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
 }
 
 message GetFollowersResponse {
-    repeated User followers = 1;
+    repeated User Followers = 1 [(gogoproto.jsontag) = "followers"];
 }
 
 message GetFollowingRequest {
-    string user_id = 1;
-    uint32 page = 2;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
 }
 
 message GetFollowingResponse {
-    repeated User following = 1;
+    repeated User Following = 1 [(gogoproto.jsontag) = "following"];
 }
 
 message FollowRequest {
-    string user_id = 1;
-    string follow_id = 2;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    string FollowID = 2 [(gogoproto.jsontag) = "follow_id"];
 }
 
 message FollowResponse {
-    User user = 1;
-    User following_user = 2;
+    User User = 1 [(gogoproto.jsontag) = "user"];
+    User FollowingUser = 2 [(gogoproto.jsontag) = "following_user"];
 }
 
 // PostService ----------------------------------------------------------------
@@ -105,105 +102,105 @@ service PostSvc {
 }
 
 message Post {
-    string post_id = 1;
-    string file_id = 2;
-    uint32 like_count = 3;
-    repeated Comment top_comments = 4;
-    uint32 comment_count = 5;
-    string user_id = 6;
-    string caption = 7;
-    fixed32 created_at_seconds = 8;
+    string PostID = 1 [(gogoproto.jsontag) = "post_id"];
+    string FileID = 2 [(gogoproto.jsontag) = "file_id"];
+    uint32 LikeCount = 3 [(gogoproto.jsontag) = "like_count"];
+    repeated Comment TopComments = 4 [(gogoproto.jsontag) = "top_comments"];
+    uint32 CommentCount = 5 [(gogoproto.jsontag) = "comment_count"];
+    string UserID = 6 [(gogoproto.jsontag) = "user_id"];
+    string Caption = 7 [(gogoproto.jsontag) = "caption"];
+    fixed32 CreatedAtSeconds = 8 [(gogoproto.jsontag) = "created_at_seconds"];
 }
 
 message Comment {
-    string comment_id = 1;
-    string user_id = 2;
-    string post_id = 3;
-    string description = 4;
-    uint32 like_count = 5;
-    fixed32 created_at_seconds = 6;
+    string CommentID = 1 [(gogoproto.jsontag) = "comment_id"];
+    string UserID = 2 [(gogoproto.jsontag) = "user_id"];
+    string PostID = 3 [(gogoproto.jsontag) = "post_id"];
+    string Text = 4 [(gogoproto.jsontag) = "text"];
+    uint32 LikeCount = 5 [(gogoproto.jsontag) = "like_count"];
+    fixed32 CreatedAtSeconds = 6 [(gogoproto.jsontag) = "created_at_seconds"];
 }
 
 message Like {
-    string like_id = 1;
-    string user_id = 2;
-    string post_id = 3;
-    fixed32 created_at_seconds = 4;
+    string LikeID = 1 [(gogoproto.jsontag) = "like_id"];
+    string UserID = 2 [(gogoproto.jsontag) = "user_id"];
+    string PostID = 3 [(gogoproto.jsontag) = "post_id"];
+    fixed32 CreatedAtSeconds = 4 [(gogoproto.jsontag) = "created_at_seconds"];
 }
 
 message CreatePostRequest {
-    string post_id = 1;
-    string file_id = 2;
-    string user_id = 3;
+    string PostID = 1 [(gogoproto.jsontag) = "post_id"];
+    string FileID = 2 [(gogoproto.jsontag) = "file_id"];
+    string UserID = 3 [(gogoproto.jsontag) = "user_id"];
     string caption = 4;
 }
 
 
 message CreatePostLikeRequest {
-    string like_id = 1;
-    string user_id = 2;
-    string post_id = 3;
+    string LikeID = 1 [(gogoproto.jsontag) = "like_id"];
+    string UserID = 2 [(gogoproto.jsontag) = "user_id"];
+    string PostID = 3 [(gogoproto.jsontag) = "post_id"];
 }
 
 message CreateCommentLikeRequest {
-    string like_id = 1;
-    string user_id = 2;
-    string comment_id = 3;
+    string LikeID = 1 [(gogoproto.jsontag) = "like_id"];
+    string UserID = 2 [(gogoproto.jsontag) = "user_id"];
+    string CommentID = 3 [(gogoproto.jsontag) = "comment_id"];
 }
 
 message CreateCommentRequest {
-    string post_id = 1;
-    string comment_id = 2;
-    string user_id = 3;
-    string text = 4;
+    string PostID = 1 [(gogoproto.jsontag) = "post_id"];
+    string CommentID = 2 [(gogoproto.jsontag) = "comment_id"];
+    string UserID = 3 [(gogoproto.jsontag) = "user_id"];
+    string Text = 4 [(gogoproto.jsontag) = "text"];
 }
 
 message CreateCommentResponse {
-    Post post = 1;
-    Comment comment = 2;
+    Post Post = 1 [(gogoproto.jsontag) = "post"];
+    Comment Comment = 2 [(gogoproto.jsontag) = "comment"];
 }
 
 message GetPostRequest {
-    string post_id = 1;
+    string PostID = 1 [(gogoproto.jsontag) = "post_id"];
 }
 
 message GetPostsRequest {
-    string user_id = 1;
-    uint32 page = 2;
+    string UserID = 1 [(gogoproto.jsontag) = "user_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
 }
 
 message GetPostsResponse {
-    repeated Post posts = 1;
-    uint32 next_page = 2;
+    repeated Post Posts = 1 [(gogoproto.jsontag) = "posts"];
+    uint32 NextPage = 2 [(gogoproto.jsontag) = "next_page"];
 }
 
 message GetCommentRequest {
-    string comment_id = 1;
+    string CommentID = 1 [(gogoproto.jsontag) = "comment_id"];
 }
 
 message GetPostCommentsRequest {
-    string post_id = 1;
-    uint32 page = 2;
+    string PostID = 1 [(gogoproto.jsontag) = "post_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
 }
 
 message CommentsResponse {
-    repeated Comment comments = 1;
-    uint32 next_page = 2;
+    repeated Comment Comments = 1 [(gogoproto.jsontag) = "comments"];
+    uint32 NextPage = 2 [(gogoproto.jsontag) = "next_page"];
 }
 
 message GetPostLikesRequest {
-    string post_id = 1;
-    uint32 page = 2;
+    string PostID = 1 [(gogoproto.jsontag) = "post_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
 }
 
 message GetCommentLikesRequest {
-    string comment_id = 1;
-    uint32 page = 2;
+    string CommentID = 1 [(gogoproto.jsontag) = "comment_id"];
+    uint32 Page = 2 [(gogoproto.jsontag) = "page"];
 }
 
 message LikesResponse {
-    repeated Like likes = 1;
-    uint32 next_page = 2;
+    repeated Like Likes = 1 [(gogoproto.jsontag) = "likes"];
+    uint32 NextPage = 2 [(gogoproto.jsontag) = "next_page"];
 }
 
 // FileService ----------------------------------------------------------------
@@ -213,7 +210,7 @@ service FileSvc {
 }
 
 message FilePart {
-    bytes content = 1;
+    bytes Content = 1 [(gogoproto.jsontag) = "content"];
 }
 
 enum UploadStatusCode {
@@ -223,6 +220,6 @@ enum UploadStatusCode {
 }
 
 message UploadStatus {
-    string file_id = 1;
-    UploadStatusCode status = 2;
+    string FileID = 1 [(gogoproto.jsontag) = "file_id"];
+    UploadStatusCode Status = 2 [(gogoproto.jsontag) = "status"];
 }

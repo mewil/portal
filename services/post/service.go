@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	log, err := logger.NewLogger()
+	log, err := logger.NewLogger("post_service")
 	if err != nil {
 		panic(err)
 	}
@@ -48,6 +48,22 @@ func (s *postSvc) CreateCommentLike(ctx context.Context, in *pb.CreateCommentLik
 	return nil, nil
 }
 
+func (s *postSvc) DeletePost(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	return nil, nil
+}
+
+func (s *postSvc) DeletePostLike(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	return nil, nil
+}
+
+func (s *postSvc) DeleteComment(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	return nil, nil
+}
+
+func (s *postSvc) DeleteCommentLike(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	return nil, nil
+}
+
 func (s *postSvc) GetPost(ctx context.Context, in *pb.GetPostRequest) (*pb.Post, error) {
 	return nil, nil
 }
@@ -60,7 +76,7 @@ func (s *postSvc) GetFeed(ctx context.Context, in *pb.GetPostsRequest) (*pb.GetP
 	return nil, nil
 }
 
-func (s *postSvc) GetPostLikes(ctx context.Context, in *pb.GetPostLikesRequest) (*pb.LikesResponse, error) {
+func (s *postSvc) GetPostLikes(ctx context.Context, in *pb.GetPostLikesRequest) (*pb.PostLikesResponse, error) {
 	return nil, nil
 }
 
@@ -68,7 +84,7 @@ func (s *postSvc) GetPostComments(ctx context.Context, in *pb.GetPostCommentsReq
 	return nil, nil
 }
 
-func (s *postSvc) GetCommentLikes(ctx context.Context, in *pb.GetCommentLikesRequest) (*pb.LikesResponse, error) {
+func (s *postSvc) GetCommentLikes(ctx context.Context, in *pb.GetCommentLikesRequest) (*pb.CommentLikesResponse, error) {
 	return nil, nil
 }
 

@@ -6,52 +6,198 @@ import (
 	"net"
 	"os"
 
+	"github.com/mewil/portal/common/database"
 	"github.com/mewil/portal/common/grpc_utils"
 	"github.com/mewil/portal/common/logger"
+	"github.com/mewil/portal/common/validation"
 	"github.com/mewil/portal/pb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func main() {
-	log, err := logger.NewLogger()
+	log, err := logger.NewLogger("user_service")
 	if err != nil {
 		panic(err)
 	}
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("PORT")))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("failed to start tcp listener", err)
 	}
 
 	s, err := grpc_utils.NewServer(log)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("failed to initialize grpc server", err)
 	}
-	pb.RegisterUserSvcServer(s, &userSvc{})
+
+	db, err := database.NewDatabase(
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"),
+	)
+	if err != nil {
+		log.Fatal("failed to connect to database", err)
+	}
+	userRepository, err := NewUserRepository(
+		log,
+		db,
+	)
+	if err != nil {
+		log.Fatal("failed to initialize user repository", err)
+	}
+	pb.RegisterUserSvcServer(s, &userSvc{
+		repository: userRepository,
+	})
 	s.Serve(listener)
 }
 
 type userSvc struct {
+	repository UserRepository
 }
 
 func (s *userSvc) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.User, error) {
-	return nil, nil
+	userID := in.GetUserID()
+	if err := s.validateUserIDDoesNotExist(userID); err != nil {
+		return nil, err
+	}
+	username := in.GetUsername()
+	if err := s.validateUsernameDoesNotExist(userID); err != nil {
+		return nil, err
+	}
+	email := in.GetEmail()
+	if !validation.ValidEmail(email) {
+		return nil, status.Error(codes.InvalidArgument, "invalid email format")
+	}
+	if err := s.repository.CreateUser(userID, username, email); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create user %s", err.Error())
+	}
+	user, err := s.repository.GetUser(userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch user %s", err.Error())
+	}
+	return user, nil
 }
 
 func (s *userSvc) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.User, error) {
-	return nil, nil
+	userID := in.GetUserID()
+	if err := s.validateUserIDExists(userID); err != nil {
+		return nil, err
+	}
+	user, err := s.repository.GetUser(userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch user %s", err.Error())
+	}
+	return user, nil
 }
 
 func (s *userSvc) GetFollowers(ctx context.Context, in *pb.GetFollowersRequest) (*pb.GetFollowersResponse, error) {
-	return nil, nil
+	userID := in.GetUserID()
+	if err := s.validateUserIDExists(userID); err != nil {
+		return nil, err
+	}
+	followers, err := s.repository.GetFollowers(userID, in.GetPage())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch followers %s", err.Error())
+	}
+	return &pb.GetFollowersResponse{
+		Followers: followers,
+	}, nil
 }
 
 func (s *userSvc) GetFollowing(ctx context.Context, in *pb.GetFollowingRequest) (*pb.GetFollowingResponse, error) {
-	return nil, nil
+	userID := in.GetUserID()
+	if err := s.validateUserIDExists(userID); err != nil {
+		return nil, err
+	}
+	following, err := s.repository.GetFollowing(userID, in.GetPage())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch following %s", err.Error())
+	}
+	return &pb.GetFollowingResponse{
+		Following: following,
+	}, nil
 }
 
 func (s *userSvc) CreateFollow(ctx context.Context, in *pb.FollowRequest) (*pb.FollowResponse, error) {
-	return nil, nil
+	userID := in.GetUserID()
+	if err := s.validateUserIDExists(userID); err != nil {
+		return nil, err
+	}
+	followID := in.GetFollowID()
+	if err := s.validateUserIDExists(followID); err != nil {
+		return nil, err
+	}
+	user, err := s.repository.GetUser(userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch user %s", err.Error())
+	}
+	followed, err := s.repository.GetUser(followID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch user %s", err.Error())
+	}
+	return &pb.FollowResponse{
+		User:       user,
+		FollowUser: followed,
+	}, nil
 }
 
 func (s *userSvc) RemoveFollow(ctx context.Context, in *pb.FollowRequest) (*pb.FollowResponse, error) {
-	return nil, nil
+	userID := in.GetUserID()
+	if err := s.validateUserIDExists(userID); err != nil {
+		return nil, err
+	}
+	followID := in.GetFollowID()
+	if err := s.validateUserIDExists(followID); err != nil {
+		return nil, err
+	}
+	user, err := s.repository.GetUser(userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch user %s", err.Error())
+	}
+	unfollowed, err := s.repository.GetUser(followID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch user %s", err.Error())
+	}
+	return &pb.FollowResponse{
+		User:       user,
+		FollowUser: unfollowed,
+	}, nil
+}
+
+func (s *userSvc) validateUserIDExists(userID string) error {
+	if err := validation.ValidUUID(userID); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid user id %s", err.Error())
+	}
+	if exists, err := s.repository.UserIDExists(userID); err != nil {
+		return status.Errorf(codes.Internal, "failed to fetch if user id exists %s", err.Error())
+	} else if !exists {
+		return status.Error(codes.InvalidArgument, "user id does not exist")
+	}
+	return nil
+}
+
+func (s *userSvc) validateUserIDDoesNotExist(userID string) error {
+	if err := validation.ValidUUID(userID); err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid user id %s", err.Error())
+	}
+	if exists, err := s.repository.UserIDExists(userID); err != nil {
+		return status.Errorf(codes.Internal, "failed to fetch if user id exists %s", err.Error())
+	} else if exists {
+		return status.Error(codes.InvalidArgument, "user id already exists")
+	}
+	return nil
+}
+
+func (s *userSvc) validateUsernameDoesNotExist(username string) error {
+	if !validation.ValidUsername(username) {
+		return status.Error(codes.InvalidArgument, "invalid username format")
+	}
+	if exists, err := s.repository.UsernameExists(username); err != nil {
+		return status.Errorf(codes.Internal, "failed to fetch if username exists %s", err.Error())
+	} else if exists {
+		return status.Error(codes.InvalidArgument, "username already exists")
+	}
+	return nil
 }

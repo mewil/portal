@@ -1,4 +1,6 @@
-import * as reducers from './reducer';
+import * as reducers from './reducers';
+import * as sagas from './sagas';
 
-export { reducers };
+export * from './actions';
 export * from './selectors';
+export { reducers, sagas };

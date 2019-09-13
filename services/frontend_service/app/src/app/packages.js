@@ -2,8 +2,7 @@ import { get, compact } from 'lodash';
 
 const use = (modules = []) => ({
   reducers: combine(modules, 'reducers'),
-  actionTypes: combine(modules, 'actionTypes'),
-  actionCreators: combine(modules, 'actionCreators'),
+  actions: combine(modules, 'actions'),
   sagas: combine(modules, 'sagas'),
   selectors: combine(modules, 'selectors'),
 });
@@ -34,4 +33,6 @@ export const packages = use([
   require('@portal/app'),
   require('@portal/home'),
   require('@portal/theme'),
+  require('@portal/posts'),
+  require('@portal/user'),
 ]);

@@ -10,6 +10,8 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@portal/theme": "1.0.0",
-    "@portal/home": "1.0.0"
+    "@portal/home": "1.0.0",
+    "@portal/posts": "1.0.0",
+    "@portal/auth": "1.0.0"
   }
 }

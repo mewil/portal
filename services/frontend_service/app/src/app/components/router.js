@@ -1,15 +1,13 @@
 import { h } from 'react-hyperscript-helpers';
-import { ConnectedRouter } from 'react-router-redux';
-import createHistory from 'history/createBrowserHistory';
+import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 
 import { GlobalStyle } from '@portal/theme';
 
 import { Routes } from './routes';
 import { NavigatorConn } from './navigator';
+import { history } from '../store';
 import { bootAction } from '../actions';
-
-const history = createHistory();
 
 const Router = ({ boot = () => {} }) => {
   boot();

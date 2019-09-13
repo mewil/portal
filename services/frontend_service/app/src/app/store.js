@@ -1,12 +1,15 @@
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { createBrowserHistory } from 'history';
+import { connectRouter, routerMiddleware } from 'connected-react-router';
 import { spawn, all } from 'redux-saga/effects';
 import { enableBatching, batchDispatchMiddleware } from 'redux-batched-actions';
-import { routerMiddleware } from 'react-router-redux';
 import { END } from 'redux-saga';
 
 import { createReduxSagaMiddleware } from './middleware';
 import { packages } from './packages';
 console.log(packages);
+
+export const history = createBrowserHistory();
 
 const sagaMiddleware = createReduxSagaMiddleware();
 
@@ -18,11 +21,17 @@ const sagaCreator = (sagas) =>
     yield all(prepSagas(sagas, options));
   };
 
-const middleware = [sagaMiddleware, batchDispatchMiddleware, routerMiddleware];
+const middleware = [
+  sagaMiddleware,
+  batchDispatchMiddleware,
+  routerMiddleware(history),
+];
 
 const enhancer = compose(applyMiddleware(...middleware));
 
-const rootReducers = enableBatching(combineReducers(packages.reducers));
+const rootReducers = enableBatching(
+  combineReducers({ ...packages.reducers, router: connectRouter(history) }),
+);
 
 const rootSagas = sagaCreator(packages.sagas);
 

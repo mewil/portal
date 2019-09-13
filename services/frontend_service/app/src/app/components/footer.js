@@ -1,16 +1,17 @@
 import styled from 'styled-components';
-import { h, div } from 'react-hyperscript-helpers';
+import { h } from 'react-hyperscript-helpers';
 
 const Container = styled.div`
-  position: relative;
-  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   padding: 1rem;
-  align-content: space-between;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  flex-direction: column;
+`;
+
+const Text = styled.p`
+  text-align: center;
 `;
 
 export const Footer = () =>
-  h(Container, [div([`© ${new Date().getFullYear()} Michael Wilson`])]);
+  h(Container, [h(Text, [`© ${new Date().getFullYear()} Michael Wilson`])]);

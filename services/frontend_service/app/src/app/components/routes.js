@@ -2,14 +2,20 @@ import { h } from 'react-hyperscript-helpers';
 import { Route, Switch } from 'react-router';
 
 import { routes } from '../constants';
-import { HomePage } from '@portal/home';
+import { HomePageConn } from '@portal/home';
+import { NewPostPageConn } from '@portal/posts';
 
 export const Routes = () =>
   h(Switch, [
     h(Route, {
       exact: true,
       path: routes.HOME,
-      component: HomePage,
+      component: HomePageConn,
     }),
-    h(Route, { component: HomePage }),
+    h(Route, {
+      exact: true,
+      path: routes.NEW,
+      component: NewPostPageConn,
+    }),
+    h(Route, { component: HomePageConn }),
   ]);

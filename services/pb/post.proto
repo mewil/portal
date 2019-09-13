@@ -11,7 +11,7 @@ service PostSvc {
     rpc CreatePost(CreatePostRequest) returns (Post) {}
     rpc CreatePostLike(CreatePostLikeRequest) returns (Post) {}
     rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse) {}
-    rpc CreateCommentLike(CreateCommentLikeRequest) returns (Post) {}
+    rpc CreateCommentLike(CreateCommentLikeRequest) returns (Comment) {}
 
     rpc DeletePost(DeleteRequest) returns (DeleteResponse) {}
     rpc DeletePostLike(DeleteRequest) returns (DeleteResponse) {}

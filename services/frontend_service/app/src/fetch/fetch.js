@@ -1,6 +1,17 @@
 import 'isomorphic-fetch';
 
-export default ({ url }, reqOpts, action) =>
+import { forEach, camelCase, isPlainObject, isArray } from 'lodash';
+
+const camelCaseObject = (obj) => {
+  const result = {};
+  forEach(obj, (v, k) => {
+    result[camelCase(k)] =
+      isPlainObject(v) || isArray(v) ? camelCaseObject(v) : v;
+  });
+  return result;
+};
+
+export const apiFetch = ({ url }, reqOpts, action) =>
   fetch(url, reqOpts).then((res) =>
     res
       .json()
@@ -11,7 +22,7 @@ export default ({ url }, reqOpts, action) =>
         url: res.url,
         reqOpts,
         action,
-        data,
+        data: camelCaseObject(data),
       }))
       .catch((error) => ({
         headers: res.headers,

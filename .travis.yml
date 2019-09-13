@@ -4,18 +4,20 @@ jobs:
       node_js:
         - 12.11.0
       before_script:
-        - cd frontend
+        - cd services/frontend_service/app
         - yarn install
-      script: yarn run test
+      script: yarn test
 
     - language: go
       dist: 1.13.0
       before_script:
-        - cd backend
+        - cd services
       script: 
         - go test ./...
 
     - language: minimal
       services:
-      - docker
-      script: docker build .
+        - docker
+      before_script:
+        - cd deploy
+      script: docker-compose -f production.yml build --parallel

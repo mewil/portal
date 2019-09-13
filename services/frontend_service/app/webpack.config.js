@@ -43,7 +43,6 @@ const devConfig = {
     ],
   },
   plugins: [
-    // inject styles and javascript into index.html
     new HtmlWebpackPlugin({
       title: 'Webpack Build',
       template: './src/app/index.html',
@@ -56,10 +55,9 @@ const devConfig = {
     historyApiFallback: true,
     contentBase: './build',
     proxy: {
-      '/api': {
-        target: 'http://localhost:9090',
-        xfwd: true,
-        changeOrigin: true,
+      '/v1': {
+        target: 'http://localhost:8000',
+        secure: false,
       },
     },
   },
@@ -120,17 +118,6 @@ const buildConfig = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
   ],
-  devServer: {
-    historyApiFallback: true,
-    contentBase: './build',
-    proxy: {
-      '/api': {
-        target: 'http://localhost:9090',
-        xfwd: true,
-        changeOrigin: true,
-      },
-    },
-  },
   performance: {
     hints: process.env.NODE_ENV === 'production' ? 'warning' : false,
   },

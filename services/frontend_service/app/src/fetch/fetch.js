@@ -1,6 +1,6 @@
-import 'isomorphic-fetch';
+import fetch from 'isomorphic-fetch';
 
-import { forEach, camelCase, isPlainObject, isArray } from 'lodash';
+import { forEach, camelCase, isPlainObject, isArray, get } from 'lodash';
 
 const camelCaseObject = (obj) => {
   const result = {};
@@ -11,8 +11,29 @@ const camelCaseObject = (obj) => {
   return result;
 };
 
-export const apiFetch = ({ url }, reqOpts, action) =>
-  fetch(url, reqOpts).then((res) =>
+export const apiFetch = ({
+  url,
+  method = 'GET',
+  body,
+  form = false,
+  authToken = '',
+}) => {
+  const headers = {};
+  if (authToken !== '') {
+    headers.Authorization = `Bearer ${authToken}`;
+  }
+  if (!form) {
+    headers['Content-Type'] = 'application/json';
+  }
+  return fetch(url, {
+    method,
+    headers,
+    credentials: 'same-origin',
+    body:
+      get(headers, 'Content-Type') === 'application/json'
+        ? JSON.stringify(body)
+        : body,
+  }).then((res) =>
     res
       .json()
       .then((data) => ({
@@ -20,17 +41,14 @@ export const apiFetch = ({ url }, reqOpts, action) =>
         status: res.status,
         statusText: res.statusText,
         url: res.url,
-        reqOpts,
-        action,
-        data: camelCaseObject(data),
+        data: camelCaseObject(get(data, 'data', {})),
       }))
       .catch((error) => ({
         headers: res.headers,
         status: res.status,
         statusText: res.statusText,
         url: res.url,
-        reqOpts,
-        action,
         error,
       })),
   );
+};

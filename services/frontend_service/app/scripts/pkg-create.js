@@ -4,13 +4,10 @@
  */
 const path = require('path');
 const fs = require('fs');
-const getArgs = require('./util');
 
 const pkgFolder = './src/';
-const args = getArgs(process.argv.slice(2));
-const pkgName = args.package;
 
-run(pkgName);
+run(process.argv.slice(2)[0]);
 
 function run(name) {
   const pkgDir = path.join(pkgFolder, name);
@@ -26,7 +23,7 @@ function run(name) {
   const pkgIndex = path.join(pkgDir, 'index.js');
   fs.closeSync(fs.openSync(pkgIndex, 'w'));
 
-  console.log(`Created ${name} package with package.json and index.js!`);
+  console.log(`Created ${name} package with package.json and index.js`);
 }
 
 function createPkgJsonContent(name) {

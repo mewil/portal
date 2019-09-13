@@ -25,27 +25,15 @@ func main() {
 		log.Fatal("failed to initialize grpc server", err)
 	}
 
-	db, err := database.NewDatabase(
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_PORT"),
-	)
-	if err != nil {
-		log.Fatal("failed to connect to database", err)
-	}
-	authRepository, err := NewAuthRepository(
+	fileRepository, err := NewFileRepository(
 		log,
-		db,
-		os.Getenv("ADMIN_EMAIL"),
-		os.Getenv("ADMIN_PASSWORD"),
+		"",
 	)
 	if err != nil {
-		log.Fatal("failed to initialize auth repository", err)
+		log.Fatal("failed to initialize file repository", err)
 	}
-	pb.RegisterAuthSvcServer(s, &authSvc{
-		repository: authRepository,
+	pb.RegisterFileSvcServer(s, &fileSvc{
+		repository: fileRepository,
 	})
 	s.Serve(listener)
 }

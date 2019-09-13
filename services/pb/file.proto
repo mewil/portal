@@ -8,10 +8,21 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 service FileSvc {
     rpc Upload(stream FilePart) returns (UploadStatus) {}
+    rpc GetFile(FileRequest) returns (stream FilePart) {}
+    rpc GetFileStats(FileRequest) returns (FileStats) {}
 }
 
 message FilePart {
     bytes Content = 1 [(gogoproto.jsontag) = "content"];
+}
+
+message FileRequest {
+    string FileID = 1 [(gogoproto.jsontag) = "file_id"];
+}
+
+message FileStats {
+    string ETag = 1 [(gogoproto.jsontag) = "etag"];
+    int64 FileSize = 2 [(gogoproto.jsontag) = "size"];
 }
 
 enum UploadStatusCode {

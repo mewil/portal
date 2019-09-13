@@ -28,7 +28,6 @@ message User {
 message CreateUserRequest {
     string UserID = 1 [(gogoproto.jsontag) = "user_id"];
     string Username = 2 [(gogoproto.jsontag) = "username"];
-    string Email = 3 [(gogoproto.jsontag) = "email"];
 }
 
 message GetUserRequest {

@@ -8,5 +8,7 @@
   },
   "author": "",
   "license": "GPL-3.0",
-  "dependencies": {}
+  "dependencies": {
+    "@portal/posts": "1.0.0"
+  }
 }

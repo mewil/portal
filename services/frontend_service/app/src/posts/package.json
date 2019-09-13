@@ -1,0 +1,15 @@
+{
+  "name": "@portal/posts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@portal/fetch": "1.0.0",
+    "@portal/ui": "1.0.0",
+    "@portal/theme": "1.0.0",
+    "@portal/auth": "1.0.0",
+    "@portal/user": "1.0.0"
+  }
+}

@@ -147,7 +147,7 @@ const selectFollowersQuery = `
 select BIN_TO_UUID(user.user_id), user.name, BIN_TO_UUID(user.file_id), user.description, user.username
 from users, following
 where following.following_id=UUID_TO_BIN(?) and user.user_id=following.user_id
-order by recorded_at desc
+order by user.username asc
 limit ?,?
 `
 
@@ -159,7 +159,7 @@ const selectFollowingQuery = `
 select BIN_TO_UUID(user.user_id), user.name, BIN_TO_UUID(user.file_id), user.description, user.username
 from users, following
 where following.user_id=UUID_TO_BIN(?) and user.user_id=following.user_id
-order by recorded_at desc
+order by user.username asc
 limit ?,?
 `
 

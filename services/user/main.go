@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	log, err := logger.NewLogger("post_service")
+	log, err := logger.NewLogger("user_service")
 	if err != nil {
 		panic(err)
 	}
@@ -36,15 +36,15 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to connect to database", err)
 	}
-	postRepository, err := NewPostRepository(
+	userRepository, err := NewUserRepository(
 		log,
 		db,
 	)
 	if err != nil {
-		log.Fatal("failed to initialize post repository", err)
+		log.Fatal("failed to initialize user repository", err)
 	}
-	pb.RegisterPostSvcServer(s, &postSvc{
-		repository: postRepository,
+	pb.RegisterUserSvcServer(s, &userSvc{
+		repository: userRepository,
 	})
 	s.Serve(listener)
 }

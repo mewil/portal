@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	log, err := logger.NewLogger("post_service")
+	log, err := logger.NewLogger("auth_service")
 	if err != nil {
 		panic(err)
 	}
@@ -36,15 +36,17 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to connect to database", err)
 	}
-	postRepository, err := NewPostRepository(
+	authRepository, err := NewAuthRepository(
 		log,
 		db,
+		os.Getenv("ADMIN_EMAIL"),
+		os.Getenv("ADMIN_PASSWORD"),
 	)
 	if err != nil {
-		log.Fatal("failed to initialize post repository", err)
+		log.Fatal("failed to initialize auth repository", err)
 	}
-	pb.RegisterPostSvcServer(s, &postSvc{
-		repository: postRepository,
+	pb.RegisterAuthSvcServer(s, &authSvc{
+		repository: authRepository,
 	})
 	s.Serve(listener)
 }

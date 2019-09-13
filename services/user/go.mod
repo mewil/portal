@@ -7,7 +7,6 @@ require (
 	github.com/didip/tollbooth v4.0.2+incompatible // indirect
 	github.com/didip/tollbooth_gin v0.0.0-20170928041415-5752492be505 // indirect
 	github.com/gin-gonic/gin v1.4.0 // indirect
-	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/mewil/portal/common/database v0.0.0
 	github.com/mewil/portal/common/grpc_utils v0.0.0

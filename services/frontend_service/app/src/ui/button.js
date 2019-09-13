@@ -1,10 +1,9 @@
-import { debounce } from 'lodash';
 import { h } from 'react-hyperscript-helpers';
 import styled from 'styled-components';
-import { Children } from 'react';
 import PropTypes from 'prop-types';
 
 export const Btn = styled.div`
+  cursor: pointer;
   box-sizing: border-box;
   display: inline-block;
   padding: 10px;
@@ -50,55 +49,16 @@ export const Btn = styled.div`
   }};
 `;
 
-const Inner = styled.div`
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: ${({ justify }) => (justify ? 'space-between' : 'center')};
-  user-select: none;
-`;
-
-export const Button = ({ children, ...props }) => {
-  const childrenArray =
-    typeof children === 'string'
-      ? [h('span', children)]
-      : Children.toArray(children);
-
-  const onClick = debounce(
-    (event) => {
-      const domRect = event
-        ? event.currentTarget.getBoundingClientRect()
-        : null;
-      props.onClick({ domRect });
-    },
-    1000,
-    {
-      leading: true,
-      trailing: false,
-    },
-  );
-
+export const Button = ({ onClick, ...props }) => {
   const onKeyDown = (ev) => {
     if (ev.key === 'Enter') onClick(ev);
   };
 
-  return h(
-    Btn,
-    {
-      ...props,
-      onClick,
-      onKeyDown,
-    },
-    [
-      h(
-        Inner,
-        {
-          justify: childrenArray.length > 1,
-        },
-        childrenArray,
-      ),
-    ],
-  );
+  return h(Btn, {
+    ...props,
+    onClick,
+    onKeyDown,
+  });
 };
 
 Button.propTypes = {

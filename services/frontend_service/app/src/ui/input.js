@@ -15,7 +15,7 @@ const Row = styled.div`
   align-items: center;
 `;
 
-const InputBase = styled.input`
+const InputEl = styled.input`
   padding: 12px;
   margin: 6px 0;
   font-family: ${({ theme }) => theme.primaryFont};
@@ -44,9 +44,6 @@ const InputBase = styled.input`
     color: ${({ theme }) => theme.mediumGray};
     background-color: ${({ theme }) => theme.lightGray};
   }
-`;
-
-const InputEl = InputBase.extend`
   height: 48px;
   ${({ type }) => {
     if (type === 'password')
@@ -57,18 +54,18 @@ const InputEl = InputBase.extend`
   }};
 `;
 
-export const Label = TextFaded.withComponent('label').extend`
+export const Label = styled(TextFaded.withComponent('label'))`
   margin: 6px 2px;
   margin-bottom: 0;
 `;
 
-const RequiredLabel = TextFaded.extend`
+const RequiredLabel = styled(TextFaded)`
   font-size: 10px;
   float: right;
   ${({ theme, error }) => (error ? `color: ${theme.danger};` : '')};
 `;
 
-const ErrorEl = Label.extend`
+const ErrorEl = styled(Label)`
   position: absolute;
   top: 54px;
   z-index: 1;

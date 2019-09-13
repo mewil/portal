@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 const Heart = styled.div`
   background-color: ${({ active, theme }) =>
-    active ? theme.danger : theme.white};
-  height: 30px;
-  width: 30px;
+    active ? theme.danger : theme.lightGray};
+  height: 16px;
+  width: 16px;
   transform: rotate(-45deg);
   transition: background-color 0.4s;
 
@@ -13,19 +13,19 @@ const Heart = styled.div`
   ::after {
     content: '';
     background-color: ${({ active, theme }) =>
-      active ? theme.danger : theme.white};
-    height: 30px;
-    width: 30px;
+      active ? theme.danger : theme.lightGray};
+    height: 16px;
+    width: 16px;
     border-radius: 50%;
     position: absolute;
     transition: background-color 0.4s;
   }
   ::before {
-    top: -15px;
+    top: -8px;
   }
   ::after {
-    left: 15px;
+    left: 8px;
   }
 `;
 
-export const LikeButton = ({ active }) => h(Heart, { active });
+export const LikeButton = ({ theme, active }) => h(Heart, { theme, active });

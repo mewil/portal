@@ -53,7 +53,7 @@ func (s *FrontendSvc) PostAuthSignUp(newAuthSvcClient AuthSvcInjector, newUserSv
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
-			s.log.Info("successfully signed up user " + user.UserId)
+			s.log.Info("successfully signed up user " + user.UserID)
 			ResponseOK(c, "successfully signed up user", gin.H{
 				"user":  user,
 				"token": token,

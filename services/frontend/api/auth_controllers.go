@@ -17,33 +17,33 @@ func (s *FrontendSvc) AuthSvcSignIn(ctx context.Context, newAuthSvcClient func()
 	}
 	token, err := "", *new(error)
 	if res.GetIsAdmin() {
-		token, err = s.GenerateAdminAuthToken(res.GetUserId())
+		token, err = s.GenerateAdminAuthToken(res.GetUserID())
 	} else {
-		token, err = s.GenerateUserAuthToken(res.GetUserId())
+		token, err = s.GenerateUserAuthToken(res.GetUserID())
 	}
 	if err != nil {
-		return "", "", status.Errorf(codes.Internal, "failed to create token for user %s %s", res.GetUserId(), err.Error())
+		return "", "", status.Errorf(codes.Internal, "failed to create token for user %s %s", res.GetUserID(), err.Error())
 	}
-	return token, res.GetUserId(), nil
+	return token, res.GetUserID(), nil
 }
 
 func (s *FrontendSvc) AuthSvcSignUp(ctx context.Context, newAuthSvcClient AuthSvcInjector, newUserSvcClient UserSvcInjector, username, name, email, password string) (*pb.User, string, error) {
-	userId, err := uuid.NewUUID()
+	userID, err := uuid.NewUUID()
 	if err != nil {
 		return nil, "", status.Errorf(codes.Internal, "failed to generate UUID for new user %s", err.Error())
 	}
-	authReq := &pb.SignUpRequest{Email: email, UserId: userId.String(), Password: password}
+	authReq := &pb.SignUpRequest{Email: email, UserID: userID.String(), Password: password}
 	authRes, err := newAuthSvcClient().SignUp(ctx, authReq)
 	if err != nil {
 		return nil, "", err
 	}
 	token, err := "", *new(error)
 	if authRes.GetIsAdmin() {
-		token, err = s.GenerateAdminAuthToken(authRes.GetUserId())
+		token, err = s.GenerateAdminAuthToken(authRes.GetUserID())
 	} else {
-		token, err = s.GenerateUserAuthToken(authRes.GetUserId())
+		token, err = s.GenerateUserAuthToken(authRes.GetUserID())
 	}
-	userReq := &pb.CreateUserRequest{UserId: userId.String(), Username: username, Email: email, Name: name}
+	userReq := &pb.CreateUserRequest{UserID: userID.String(), Username: username, Email: email, Name: name}
 	user, err := newUserSvcClient().CreateUser(ctx, userReq)
 	if err != nil {
 		return nil, "", err

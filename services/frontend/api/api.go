@@ -2,8 +2,6 @@ package api
 
 import (
 	"context"
-	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +42,7 @@ func NewAPI(log logger.Logger, baseRouter *gin.RouterGroup, jwtSecret, authSvcAd
 }
 
 func NewTestAPI() FrontendSvc {
-	log, _ := logger.NewLogger()
+	log, _ := logger.NewLogger("test")
 	s := FrontendSvc{
 		log:       log,
 		jwtSecret: "jwtSecret",
@@ -107,41 +105,4 @@ func (s *FrontendSvc) injectFileSvcClient() FileSvcInjector {
 	return func() pb.FileSvcClient {
 		return pb.NewFileSvcClient(s.fileSvcConn)
 	}
-}
-
-const (
-	statusKey  = "status"
-	messageKey = "message"
-	dataKey    = "data"
-)
-
-// ResponseOK is a helper function to make sure all valid HTTP responses
-// follow the same format
-func ResponseOK(c *gin.Context, message string, data gin.H) {
-	c.JSON(http.StatusOK, gin.H{
-		statusKey:  true,
-		messageKey: message,
-		dataKey:    data,
-	})
-}
-
-// ResponseError is a helper function to make sure all invalid HTTP responses
-// follow the same format
-func ResponseError(c *gin.Context, statusCode int, message string) {
-	c.AbortWithStatusJSON(statusCode, gin.H{
-		statusKey:  false,
-		messageKey: message,
-	})
-}
-
-// ResponseInternalError is a helper function to make sure all invalid HTTP responses
-// follow the same format
-func ResponseInternalError(c *gin.Context) {
-	ResponseError(c, http.StatusInternalServerError, "an unexpected error occurred, please try again")
-}
-
-// GetPageQueryParam is a helper function that returns the value of a `page` query parameter
-func GetPageQueryParam(c *gin.Context) (uint32, error) {
-	page, err := strconv.ParseUint(c.DefaultQuery("page", "0"), 10, 32)
-	return uint32(page), err
 }

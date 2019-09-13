@@ -41,12 +41,12 @@ func (s *mockUserSvcClient) CreateUser(ctx context.Context, in *pb.CreateUserReq
 		return nil, status.Error(codes.Internal, "database error")
 	}
 	user := pb.User{
-		UserId:   in.UserId,
+		UserID:   in.UserID,
 		Username: in.Username,
 		Email:    in.Email,
 		Name:     in.Name,
 	}
-	s.svc.userStore[in.UserId] = user
+	s.svc.userStore[in.UserID] = user
 	return &user, nil
 }
 

@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-
+	"github.com/mewil/portal/common/validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -13,9 +12,8 @@ import (
 // GetFeed handles GET /v1/post/
 func (s *FrontendSvc) GetFeed(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := GetUserId(c)
-		_, userIdErr := uuid.Parse(userId)
-		if userIdErr != nil {
+		userID := GetUserID(c)
+		if err := validation.ValidUUID(userID); err != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid user id")
 			return
 		}
@@ -24,7 +22,7 @@ func (s *FrontendSvc) GetFeed(newPostSvcClient PostSvcInjector) gin.HandlerFunc 
 			ResponseError(c, http.StatusBadRequest, "please provide a valid page number")
 			return
 		}
-		feed, nextPage, err := s.PostSvcGetFeed(c.Request.Context(), newPostSvcClient, userId, uint32(page))
+		feed, nextPage, err := s.PostSvcGetFeed(c.Request.Context(), newPostSvcClient, userID, uint32(page))
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -44,13 +42,12 @@ func (s *FrontendSvc) GetFeed(newPostSvcClient PostSvcInjector) gin.HandlerFunc 
 // GetPost handles GET /v1/post/:post_id
 func (s *FrontendSvc) GetPost(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		postId := c.Param("post_id")
-		_, err := uuid.Parse(postId)
-		if err != nil {
+		postID := c.Param("post_id")
+		if err := validation.ValidUUID(postID); err != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid post id")
 			return
 		}
-		post, err := s.PostSvcGetPost(c.Request.Context(), newPostSvcClient, postId)
+		post, err := s.PostSvcGetPost(c.Request.Context(), newPostSvcClient, postID)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -69,9 +66,8 @@ func (s *FrontendSvc) GetPost(newPostSvcClient PostSvcInjector) gin.HandlerFunc 
 // GetPostLikes handles GET /v1/post/:post_id/likes
 func (s *FrontendSvc) GetPostLikes(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		postId := c.Param("post_id")
-		_, err := uuid.Parse(postId)
-		if err != nil {
+		postID := c.Param("post_id")
+		if err := validation.ValidUUID(postID); err != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid post id")
 			return
 		}
@@ -80,7 +76,7 @@ func (s *FrontendSvc) GetPostLikes(newPostSvcClient PostSvcInjector) gin.Handler
 			ResponseError(c, http.StatusBadRequest, "please provide a valid page number")
 			return
 		}
-		likes, nextPage, err := s.PostSvcGetPostLikes(c.Request.Context(), newPostSvcClient, postId, page)
+		likes, nextPage, err := s.PostSvcGetPostLikes(c.Request.Context(), newPostSvcClient, postID, page)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -100,9 +96,8 @@ func (s *FrontendSvc) GetPostLikes(newPostSvcClient PostSvcInjector) gin.Handler
 // GetPostComments handles GET /v1/post/:post_id/comments
 func (s *FrontendSvc) GetPostComments(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		postId := c.Param("post_id")
-		_, err := uuid.Parse(postId)
-		if err != nil {
+		postID := c.Param("post_id")
+		if err := validation.ValidUUID(postID); err != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid post id")
 			return
 		}
@@ -111,7 +106,7 @@ func (s *FrontendSvc) GetPostComments(newPostSvcClient PostSvcInjector) gin.Hand
 			ResponseError(c, http.StatusBadRequest, "please provide a valid page number")
 			return
 		}
-		comments, nextPage, err := s.PostSvcGetPostComments(c.Request.Context(), newPostSvcClient, postId, page)
+		comments, nextPage, err := s.PostSvcGetPostComments(c.Request.Context(), newPostSvcClient, postID, page)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -131,9 +126,8 @@ func (s *FrontendSvc) GetPostComments(newPostSvcClient PostSvcInjector) gin.Hand
 // PostPost handles POST /v1/post/
 func (s *FrontendSvc) PostPost(newPostSvcClient PostSvcInjector, newFileSvcClient FileSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := GetUserId(c)
-		_, err := uuid.Parse(userId)
-		if err != nil {
+		userID := GetUserID(c)
+		if err := validation.ValidUUID(userID); err != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid user id")
 			return
 		}
@@ -154,7 +148,7 @@ func (s *FrontendSvc) PostPost(newPostSvcClient PostSvcInjector, newFileSvcClien
 			ResponseError(c, http.StatusBadRequest, "please provide a valid media file, 8MB or less")
 			return
 		}
-		post, err := s.PostSvcCreatePost(c.Request.Context(), newPostSvcClient, newFileSvcClient, userId, req.Caption, content)
+		post, err := s.PostSvcCreatePost(c.Request.Context(), newPostSvcClient, newFileSvcClient, userID, req.Caption, content)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -173,15 +167,13 @@ func (s *FrontendSvc) PostPost(newPostSvcClient PostSvcInjector, newFileSvcClien
 // PostPostLike handles POST /v1/post/:post_id/like
 func (s *FrontendSvc) PostPostLike(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := GetUserId(c)
-		postId := c.Param("post_id")
-		_, postIdErr := uuid.Parse(postId)
-		_, userIdErr := uuid.Parse(userId)
-		if postIdErr != nil || userIdErr != nil {
+		userID := GetUserID(c)
+		postID := c.Param("post_id")
+		if userIDErr, postIDErr := validation.ValidUUID(userID), validation.ValidUUID(postID); userIDErr != nil || postIDErr != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid user id")
 			return
 		}
-		post, err := s.PostSvcCreatePostLike(c.Request.Context(), newPostSvcClient, postId, userId)
+		post, err := s.PostSvcCreatePostLike(c.Request.Context(), newPostSvcClient, postID, userID)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -200,11 +192,9 @@ func (s *FrontendSvc) PostPostLike(newPostSvcClient PostSvcInjector) gin.Handler
 // PostComment handles POST /v1/post/:post_id/comment
 func (s *FrontendSvc) PostComment(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := GetUserId(c)
-		postId := c.Param("post_id")
-		_, postIdErr := uuid.Parse(postId)
-		_, userIdErr := uuid.Parse(userId)
-		if postIdErr != nil || userIdErr != nil {
+		userID := GetUserID(c)
+		postID := c.Param("post_id")
+		if userIDErr, postIDErr := validation.ValidUUID(userID), validation.ValidUUID(postID); userIDErr != nil || postIDErr != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid user and post id")
 			return
 		}
@@ -215,7 +205,7 @@ func (s *FrontendSvc) PostComment(newPostSvcClient PostSvcInjector) gin.HandlerF
 			ResponseError(c, http.StatusBadRequest, "please provide a text")
 			return
 		}
-		post, comment, err := s.PostSvcCreatePostComment(c.Request.Context(), newPostSvcClient, postId, userId, req.Text)
+		post, comment, err := s.PostSvcCreatePostComment(c.Request.Context(), newPostSvcClient, postID, userID, req.Text)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -235,13 +225,12 @@ func (s *FrontendSvc) PostComment(newPostSvcClient PostSvcInjector) gin.HandlerF
 // GetComment handles GET /v1/comment/:comment_id
 func (s *FrontendSvc) GetComment(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		commentId := c.Param("comment_id")
-		_, err := uuid.Parse(commentId)
-		if err != nil {
+		commentID := c.Param("comment_id")
+		if err := validation.ValidUUID(commentID); err != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid comment id")
 			return
 		}
-		comment, err := s.PostSvcGetComment(c.Request.Context(), newPostSvcClient, commentId)
+		comment, err := s.PostSvcGetComment(c.Request.Context(), newPostSvcClient, commentID)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -260,13 +249,12 @@ func (s *FrontendSvc) GetComment(newPostSvcClient PostSvcInjector) gin.HandlerFu
 // GetCommentLikes handles GET /v1/comment/:comment_id/likes
 func (s *FrontendSvc) GetCommentLikes(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		commentId := c.Param("comment_id")
-		_, err := uuid.Parse(commentId)
-		if err != nil {
+		commentID := c.Param("comment_id")
+		if err := validation.ValidUUID(commentID); err != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid comment id")
 			return
 		}
-		likes, nextPage, err := s.PostSvcGetCommentLikes(c.Request.Context(), newPostSvcClient, commentId)
+		likes, nextPage, err := s.PostSvcGetCommentLikes(c.Request.Context(), newPostSvcClient, commentID)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:
@@ -286,15 +274,13 @@ func (s *FrontendSvc) GetCommentLikes(newPostSvcClient PostSvcInjector) gin.Hand
 // PostCommentLike handles POST /v1/comment/:comment_id/like
 func (s *FrontendSvc) PostCommentLike(newPostSvcClient PostSvcInjector) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := GetUserId(c)
-		commentId := c.Param("comment_id")
-		_, commentIdErr := uuid.Parse(commentId)
-		_, userIdErr := uuid.Parse(userId)
-		if commentIdErr != nil || userIdErr != nil {
+		userID := GetUserID(c)
+		commentID := c.Param("comment_id")
+		if userIDErr, commentIDErr := validation.ValidUUID(userID), validation.ValidUUID(commentID); userIDErr != nil || commentIDErr != nil {
 			ResponseError(c, http.StatusBadRequest, "please provide a valid user and comment id")
 			return
 		}
-		comment, err := s.PostSvcCreateCommentLike(c.Request.Context(), newPostSvcClient, commentId, userId)
+		comment, err := s.PostSvcCreateCommentLike(c.Request.Context(), newPostSvcClient, commentID, userID)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:

@@ -12,7 +12,7 @@ import (
 
 type mockAuthSvc struct {
 	store map[string]struct {
-		UserId   string
+		UserID   string
 		Password string
 	}
 }
@@ -20,7 +20,7 @@ type mockAuthSvc struct {
 func newMockAuthSvc() *mockAuthSvc {
 	return &mockAuthSvc{
 		store: make(map[string]struct {
-			UserId   string
+			UserID   string
 			Password string
 		}, 0),
 	}
@@ -47,7 +47,7 @@ func (s *mockAuthSvcClient) SignIn(ctx context.Context, in *pb.SignInRequest, op
 		return nil, status.Error(codes.Unauthenticated, "invalid password")
 	}
 	return &pb.SignInResponse{
-		UserId:  s.svc.store[in.Email].UserId,
+		UserID:  s.svc.store[in.Email].UserID,
 		IsAdmin: false,
 	}, nil
 }
@@ -58,14 +58,14 @@ func (s *mockAuthSvcClient) SignUp(ctx context.Context, in *pb.SignUpRequest, op
 	}
 
 	s.svc.store[in.Email] = struct {
-		UserId   string
+		UserID   string
 		Password string
 	}{
-		UserId:   in.UserId,
+		UserID:   in.UserID,
 		Password: in.Password,
 	}
 	return &pb.SignInResponse{
-		UserId:  in.UserId,
+		UserID:  in.UserID,
 		IsAdmin: false,
 	}, nil
 }

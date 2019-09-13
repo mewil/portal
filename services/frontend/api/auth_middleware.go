@@ -14,7 +14,7 @@ const (
 	authCookieKey           = "auth_cookie"
 	authHeaderKey           = "Authorization"
 	authHeaderValuePrefix   = "Bearer "
-	userIdClaimsKey         = "userId"
+	userIDClaimsKey         = "userID"
 	authGroupClaimsKey      = "authGroup"
 	expiresAtClaimsKey      = "expiresAt"
 	expirationPeriod        = 7 * 24 * time.Hour
@@ -22,8 +22,8 @@ const (
 	adminAuthorizationGroup = "admin"
 )
 
-func GetUserId(c *gin.Context) string {
-	return c.GetString(userIdClaimsKey)
+func GetUserID(c *gin.Context) string {
+	return c.GetString(userIDClaimsKey)
 }
 
 func (s *FrontendSvc) UserAuthMiddleware() gin.HandlerFunc {
@@ -79,11 +79,11 @@ func (s *FrontendSvc) validateToken(c *gin.Context, authGroup string) error {
 	if !ok || group != authGroup {
 		return errors.New("invalid auth group")
 	}
-	userIdString, ok := claims[userIdClaimsKey].(string)
+	userIDString, ok := claims[userIDClaimsKey].(string)
 	if !ok {
 		return errors.New("invalid user UUID value")
 	}
-	c.Set(userIdClaimsKey, userIdString)
+	c.Set(userIDClaimsKey, userIDString)
 	expiresAtString, ok := claims[expiresAtClaimsKey].(string)
 	if !ok {
 		return errors.New("invalid expired at value")
@@ -98,17 +98,17 @@ func (s *FrontendSvc) validateToken(c *gin.Context, authGroup string) error {
 	return nil
 }
 
-func (s *FrontendSvc) GenerateUserAuthToken(userId string) (string, error) {
-	return s.generateToken(userId, userAuthorizationGroup)
+func (s *FrontendSvc) GenerateUserAuthToken(userID string) (string, error) {
+	return s.generateToken(userID, userAuthorizationGroup)
 }
 
-func (s *FrontendSvc) GenerateAdminAuthToken(userId string) (string, error) {
-	return s.generateToken(userId, adminAuthorizationGroup)
+func (s *FrontendSvc) GenerateAdminAuthToken(userID string) (string, error) {
+	return s.generateToken(userID, adminAuthorizationGroup)
 }
 
-func (s *FrontendSvc) generateToken(userId string, authGroup string) (string, error) {
+func (s *FrontendSvc) generateToken(userID string, authGroup string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, &jwt.MapClaims{
-		userIdClaimsKey:    userId,
+		userIDClaimsKey:    userID,
 		authGroupClaimsKey: authGroup,
 		expiresAtClaimsKey: time.Now().Add(expirationPeriod).Format(time.RFC3339Nano),
 	})

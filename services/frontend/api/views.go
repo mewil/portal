@@ -1,6 +1,9 @@
 package api
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/didip/tollbooth"
 	"github.com/didip/tollbooth_gin"
 	"github.com/gin-gonic/gin"
@@ -19,7 +22,7 @@ func (s *FrontendSvc) createViews(baseRouter *gin.RouterGroup) {
 	userRouter.GET("/:user_id", s.GetUser(s.injectUserSvcClient()))
 	userRouter.GET("/:user_id/followers", s.GetUserFollowers(s.injectUserSvcClient()))
 	userRouter.GET("/:user_id/following", s.GetUserFollowing(s.injectUserSvcClient()))
-	userRouter.GET("/:user_id/profile", s.GetUserProfile(s.injectPostSvcClient(), s.injectPostSvcClient()))
+	userRouter.GET("/:user_id/profile", s.GetUserProfile(s.injectUserSvcClient(), s.injectPostSvcClient()))
 	userRouter.POST("/:user_id/follow", s.PostUserFollow(s.injectUserSvcClient()))
 	userRouter.POST("/:user_id/unfollow", s.PostUserUnfollow(s.injectUserSvcClient()))
 
@@ -29,7 +32,7 @@ func (s *FrontendSvc) createViews(baseRouter *gin.RouterGroup) {
 	postRouter.GET("/:post_id", s.GetPost(s.injectPostSvcClient()))
 	postRouter.GET("/:post_id/likes", s.GetPostLikes(s.injectPostSvcClient()))
 	postRouter.GET("/:post_id/comments", s.GetPostComments(s.injectPostSvcClient()))
-	postRouter.POST("/", s.PostPost(s.injectPostSvcClient()))
+	postRouter.POST("/", s.PostPost(s.injectPostSvcClient(), s.injectFileSvcClient()))
 	postRouter.POST("/:post_id/like", s.PostPostLike(s.injectPostSvcClient()))
 	postRouter.POST("/:post_id/comment", s.PostComment(s.injectPostSvcClient()))
 
@@ -37,4 +40,41 @@ func (s *FrontendSvc) createViews(baseRouter *gin.RouterGroup) {
 	commentRouter.GET("/:comment_id", s.GetComment(s.injectPostSvcClient()))
 	commentRouter.GET("/:comment_id/likes", s.GetCommentLikes(s.injectPostSvcClient()))
 	commentRouter.POST("/:comment_id/like", s.PostCommentLike(s.injectPostSvcClient()))
+}
+
+const (
+	statusKey  = "status"
+	messageKey = "message"
+	dataKey    = "data"
+)
+
+// ResponseOK is a helper function to make sure all valid HTTP responses
+// follow the same format
+func ResponseOK(c *gin.Context, message string, data gin.H) {
+	c.JSON(http.StatusOK, gin.H{
+		statusKey:  true,
+		messageKey: message,
+		dataKey:    data,
+	})
+}
+
+// ResponseError is a helper function to make sure all invalid HTTP responses
+// follow the same format
+func ResponseError(c *gin.Context, statusCode int, message string) {
+	c.AbortWithStatusJSON(statusCode, gin.H{
+		statusKey:  false,
+		messageKey: message,
+	})
+}
+
+// ResponseInternalError is a helper function to make sure all invalid HTTP responses
+// follow the same format
+func ResponseInternalError(c *gin.Context) {
+	ResponseError(c, http.StatusInternalServerError, "an unexpected error occurred, please try again")
+}
+
+// GetPageQueryParam is a helper function that returns the value of a `page` query parameter
+func GetPageQueryParam(c *gin.Context) (uint32, error) {
+	page, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 32)
+	return uint32(page), err
 }

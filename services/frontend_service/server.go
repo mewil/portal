@@ -3,19 +3,18 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/static"
-	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/mewil/portal/common/logger"
-	"github.com/mewil/portal/frontend/api"
-	"go.uber.org/zap"
+	"github.com/mewil/portal/common/middleware"
+	"github.com/mewil/portal/frontend_service/api"
 )
 
 const (
 	serverTimeout        = 10 * time.Second
-	serverPort           = 8000
 	serverMaxHeaderBytes = 1 << 20
 )
 
@@ -26,9 +25,17 @@ func main() {
 	}
 	r := newRouter(l)
 	r.Use(static.Serve("/", static.LocalFile("/app", true)))
-	api.NewAPI(l, r.Group("/v1"))
+	api.NewAPI(
+		l,
+		r.Group("/v1"),
+		os.Getenv("JWT_SECRET"),
+		os.Getenv("AUTH_SVC_ADDR"),
+		os.Getenv("USER_SVC_ADDR"),
+		os.Getenv("POST_SVC_ADDR"),
+		os.Getenv("FILE_SVC_ADDR"),
+	)
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", serverPort),
+		Addr:           fmt.Sprintf(":%s", os.Getenv("PORT")),
 		Handler:        r,
 		ReadTimeout:    serverTimeout,
 		WriteTimeout:   serverTimeout,
@@ -39,7 +46,7 @@ func main() {
 
 func newRouter(log logger.Logger) *gin.Engine {
 	r := gin.Default()
-	r.Use(ginzap.Ginzap(log.(*zap.SugaredLogger).Desugar(), time.RFC3339Nano, true))
-	r.Use(ginzap.RecoveryWithZap(log.(*zap.SugaredLogger).Desugar(), true))
+	r.Use(middleware.LogMiddleware(log))
+	r.Use(middleware.RecoveryMiddleware(log))
 	return r
 }

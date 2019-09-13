@@ -24,8 +24,8 @@ type FrontendSvc struct {
 }
 
 const (
-	fileBufferSize = 1024
-	fileSizeLimit  = 8000 * fileBufferSize
+	fileBufferSize = 4096
+	fileSizeLimit  = 2000 * fileBufferSize
 )
 
 func NewAPI(log logger.Logger, baseRouter *gin.RouterGroup, jwtSecret, authSvcAddr, userSvcAddr, postSvcAddr, fileSvcAddr string) error {

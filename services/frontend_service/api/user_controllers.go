@@ -37,11 +37,11 @@ func (s *FrontendSvc) UserSvcGetProfile(ctx context.Context, newUserSvcClient Us
 func (s *FrontendSvc) UserSvcCreateFollow(ctx context.Context, newUserSvcClient UserSvcInjector, userID, followID string) (*pb.User, *pb.User, error) {
 	req := &pb.FollowRequest{UserID: userID, FollowID: followID}
 	res, err := newUserSvcClient().CreateFollow(ctx, req)
-	return res.GetUser(), res.GetFollowingUser(), err
+	return res.GetUser(), res.GetFollowUser(), err
 }
 
 func (s *FrontendSvc) UserSvcRemoveFollow(ctx context.Context, newUserSvcClient UserSvcInjector, userID, followID string) (*pb.User, *pb.User, error) {
 	req := &pb.FollowRequest{UserID: userID, FollowID: followID}
 	res, err := newUserSvcClient().RemoveFollow(ctx, req)
-	return res.GetUser(), res.GetFollowingUser(), err
+	return res.GetUser(), res.GetFollowUser(), err
 }

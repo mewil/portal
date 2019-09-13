@@ -1,4 +1,4 @@
-module github.com/mewil/portal/frontend/api
+module github.com/mewil/portal/frontend_service/api
 
 go 1.13
 

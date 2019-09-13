@@ -22,7 +22,7 @@ func (s *FrontendSvc) PostSvcGetPost(ctx context.Context, newPostSvcClient PostS
 	return newPostSvcClient().GetPost(ctx, req)
 }
 
-func (s *FrontendSvc) PostSvcGetPostLikes(ctx context.Context, newPostSvcClient PostSvcInjector, postID string, page uint32) ([]*pb.Like, uint32, error) {
+func (s *FrontendSvc) PostSvcGetPostLikes(ctx context.Context, newPostSvcClient PostSvcInjector, postID string, page uint32) ([]*pb.PostLike, uint32, error) {
 	req := &pb.GetPostLikesRequest{PostID: postID, Page: page}
 	res, err := newPostSvcClient().GetPostLikes(ctx, req)
 	return res.GetLikes(), res.GetNextPage(), err
@@ -95,13 +95,13 @@ func (s *FrontendSvc) PostSvcGetComment(ctx context.Context, newPostSvcClient Po
 	return newPostSvcClient().GetComment(ctx, req)
 }
 
-func (s *FrontendSvc) PostSvcGetCommentLikes(ctx context.Context, newPostSvcClient PostSvcInjector, commentID string) ([]*pb.Like, uint32, error) {
+func (s *FrontendSvc) PostSvcGetCommentLikes(ctx context.Context, newPostSvcClient PostSvcInjector, commentID string) ([]*pb.CommentLike, uint32, error) {
 	req := &pb.GetCommentLikesRequest{CommentID: commentID}
 	res, err := newPostSvcClient().GetCommentLikes(ctx, req)
 	return res.GetLikes(), res.GetNextPage(), err
 }
 
-func (s *FrontendSvc) PostSvcCreateCommentLike(ctx context.Context, newPostSvcClient PostSvcInjector, commentID, userID string) (*pb.Post, error) {
+func (s *FrontendSvc) PostSvcCreateCommentLike(ctx context.Context, newPostSvcClient PostSvcInjector, commentID, userID string) (*pb.Comment, error) {
 	likeID, err := uuid.NewUUID()
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate UUID for new like %s", err.Error())

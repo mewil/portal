@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -131,15 +132,10 @@ func (s *FrontendSvc) PostPost(newPostSvcClient PostSvcInjector, newFileSvcClien
 			ResponseError(c, http.StatusBadRequest, "please provide a valid user id")
 			return
 		}
-		req := struct {
-			Caption string `json:"caption" binding:"required"`
-		}{}
-		if err := c.ShouldBindJSON(&req); err != nil {
-			ResponseError(c, http.StatusBadRequest, "please provide a caption")
-			return
-		}
+		caption := c.DefaultPostForm("caption", "")
 		file, err := c.FormFile("media")
 		if err != nil {
+			fmt.Println(err)
 			ResponseError(c, http.StatusBadRequest, "please provide a media file")
 			return
 		}
@@ -148,7 +144,7 @@ func (s *FrontendSvc) PostPost(newPostSvcClient PostSvcInjector, newFileSvcClien
 			ResponseError(c, http.StatusBadRequest, "please provide a valid media file, 8MB or less")
 			return
 		}
-		post, err := s.PostSvcCreatePost(c.Request.Context(), newPostSvcClient, newFileSvcClient, userID, req.Caption, content)
+		post, err := s.PostSvcCreatePost(c.Request.Context(), newPostSvcClient, newFileSvcClient, userID, caption, content)
 		st := status.Convert(err)
 		switch st.Code() {
 		case codes.OK:

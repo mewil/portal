@@ -14,7 +14,7 @@ const rateLimitTPS = 0.5
 func (s *FrontendSvc) createViews(baseRouter *gin.RouterGroup) {
 	rateLimitMiddleware := tollbooth_gin.LimitHandler(tollbooth.NewLimiter(rateLimitTPS, nil))
 	authRouter := baseRouter.Group("/auth")
-	authRouter.POST("/signin", rateLimitMiddleware, s.PostAuthSignIn(s.injectAuthSvcClient()))
+	authRouter.POST("/signin", rateLimitMiddleware, s.PostAuthSignIn(s.injectAuthSvcClient(), s.injectUserSvcClient()))
 	authRouter.POST("/signup", rateLimitMiddleware, s.PostAuthSignUp(s.injectAuthSvcClient(), s.injectUserSvcClient()))
 
 	userRouter := baseRouter.Group("/user")
@@ -40,6 +40,9 @@ func (s *FrontendSvc) createViews(baseRouter *gin.RouterGroup) {
 	commentRouter.GET("/:comment_id", s.GetComment(s.injectPostSvcClient()))
 	commentRouter.GET("/:comment_id/likes", s.GetCommentLikes(s.injectPostSvcClient()))
 	commentRouter.POST("/:comment_id/like", s.PostCommentLike(s.injectPostSvcClient()))
+
+	fileRouter := baseRouter.Group("/file")
+	fileRouter.GET("/:file_id", s.GetFile(s.injectFileSvcClient()))
 }
 
 const (
@@ -51,7 +54,13 @@ const (
 // ResponseOK is a helper function to make sure all valid HTTP responses
 // follow the same format
 func ResponseOK(c *gin.Context, message string, data gin.H) {
-	c.JSON(http.StatusOK, gin.H{
+	ResponseValid(c, http.StatusOK, message, data)
+}
+
+// ResponseValid is a helper function to make sure all valid HTTP responses
+// follow the same format
+func ResponseValid(c *gin.Context, statusCode int, message string, data gin.H) {
+	c.JSON(statusCode, gin.H{
 		statusKey:  true,
 		messageKey: message,
 		dataKey:    data,

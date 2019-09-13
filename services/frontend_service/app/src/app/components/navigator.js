@@ -11,7 +11,7 @@ import { HeaderConn } from './header';
 import { Footer } from './footer';
 
 const Container = styled.div`
-  margin-top: 80px;
+  margin: 80px auto 0 auto;
 `;
 
 const Navigator = ({ theme, children }) =>

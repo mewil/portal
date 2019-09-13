@@ -31,8 +31,9 @@ const combine = (modules = [], name = '') => {
 
 export const packages = use([
   require('@portal/app'),
+  require('@portal/auth'),
   require('@portal/home'),
-  require('@portal/theme'),
   require('@portal/posts'),
+  require('@portal/theme'),
   require('@portal/user'),
 ]);

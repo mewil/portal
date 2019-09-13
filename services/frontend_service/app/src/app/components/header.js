@@ -7,13 +7,12 @@ import { h } from 'react-hyperscript-helpers';
 
 // eslint-disable-next-line no-unused-vars
 import { theme as globalTheme, devices, getTheme } from '@portal/theme';
-import { getAuthUser } from '@portal/auth';
+import { getAuthUserId } from '@portal/auth';
 
 import { routes } from '../constants';
 
 const Wrapper = styled.div`
   margin: 0 px 16%;
-  background-color: white;
   ${devices.small`
         margin: 0px 8%;
     `};
@@ -40,7 +39,7 @@ const HeaderNavLink = styled(NavLink)`
   color: ${({ theme }) => theme.primary};
   margin: auto;
   margin-left: 0;
-  font-size: 16px;
+  font-size: 20px;
   padding: 2px 20px;
   border-radius: 5px;
   text-decoration: none;
@@ -63,23 +62,27 @@ const StyledNavLink = styled(NavLink)`
   }
 `;
 
-const Header = ({ user }) =>
+const Header = ({ userId }) =>
   h(Fragment, [
     h(Helmet, [h('title', 'Portal')]),
     h(Wrapper, [
       h(HeaderNavLink, { to: routes.HOME }, 'Portal'),
-      user
-        ? h(NavContainer, [
-            h(StyledNavLink, { to: routes.NEW }, '+'),
+      userId === null
+        ? h(NavContainer, [h(StyledNavLink, { to: routes.SIGNIN }, 'Sign In')])
+        : h(NavContainer, [
+            h(
+              StyledNavLink,
+              { to: routes.NEW, style: { fontSize: '20px' } },
+              '+',
+            ),
             h(StyledNavLink, { to: routes.PROFILE }, 'Profile'),
-          ])
-        : h(NavContainer, [h(StyledNavLink, { to: routes.SIGNIN }, 'Sign In')]),
+          ]),
     ]),
   ]);
 
 const mapStateToProps = (state) => ({
   theme: getTheme(state),
-  user: getAuthUser(state),
+  userId: getAuthUserId(state),
 });
 
 export const HeaderConn = connect(mapStateToProps)(Header);

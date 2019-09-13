@@ -4,6 +4,7 @@ import { Route, Switch } from 'react-router';
 import { routes } from '../constants';
 import { HomePageConn } from '@portal/home';
 import { NewPostPageConn } from '@portal/posts';
+import { SignInPageConn } from '@portal/auth';
 
 export const Routes = () =>
   h(Switch, [
@@ -11,6 +12,11 @@ export const Routes = () =>
       exact: true,
       path: routes.HOME,
       component: HomePageConn,
+    }),
+    h(Route, {
+      exact: true,
+      path: routes.SIGNIN,
+      component: SignInPageConn,
     }),
     h(Route, {
       exact: true,

@@ -9,11 +9,21 @@ jobs:
       script: yarn test
 
     - language: go
-      dist: 1.13.0
-      before_script:
-        - cd services
+      go:
+        - 1.13.x
+      env:
+        - GO111MODULE=on
       script: 
-        - go test ./...
+        - (cd services/auth_service && go test ./...)
+        - (cd services/file_service && go test ./...)
+        - (cd services/common/database && go test ./...)
+        - (cd services/common/grpc_utils && go test ./...)
+        - (cd services/common/logger && go test ./...)
+        - (cd services/common/middleware && go test ./...)
+        - (cd services/common/validation && go test ./...)
+        - (cd services/frontend_service && go test ./...)
+        - (cd services/post_service && go test ./...)
+        - (cd services/user_service && go test ./...)
 
     - language: minimal
       services:

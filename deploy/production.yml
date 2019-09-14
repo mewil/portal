@@ -1,86 +1,118 @@
 version: '2'
 services:
-  portal:
-    image: portal
-    container_name: portal
+  frontend_service:
+    image: frontend_service
+    container_name: frontend_service
     restart: always
     build:
-      context: ..
+      context: ../services
+      dockerfile: frontend_service/Dockerfile
     environment:
-      - MYSQL_ROOT_PASSWORD
-      - LETSENCRYPT_EMAIL
-      - GIN_MODE=release
-      - VIRTUAL_HOST=portal.mwilson.io
-      - LETSENCRYPT_HOST=portal.mwilson.io
-      - NETWORK_ACCESS=external
+      - PORT=8000
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=portal
+      - AUTH_SVC_ADDR=auth_service:8001
+      - USER_SVC_ADDR=user_service:8002
+      - POST_SVC_ADDR=post_service:8003
+      - FILE_SVC_ADDR=file_service:8004
+      - JWT_SECRET
+      - DB_USER
+      - DB_PASSWORD
     ports:
-      - 7000:7000
+      - 8000:8000
+
+  auth_service:
+    image: auth_service
+    container_name: auth_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: auth_service/Dockerfile
+    environment:
+      - PORT=8001
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=portal
+      - DB_USER
+      - DB_PASSWORD
+    ports:
+      - 8001:8001
+
+  user_service:
+    image: user_service
+    container_name: user_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: user_service/Dockerfile
+    environment:
+      - PORT=8002
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=portal
+      - DB_USER
+      - DB_PASSWORD
+    ports:
+      - 8002:8002
+
+  post_service:
+    image: post_service
+    container_name: post_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: post_service/Dockerfile
+    environment:
+      - PORT=8003
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=portal
+      - DB_USER
+      - DB_PASSWORD
+    ports:
+      - 8003:8003
+
+  file_service:
+    image: file_service
+    container_name: file_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: file_service/Dockerfile
+    environment:
+      - PORT=8004
+      - STORE_ADDR=minio:9000
+      - STORE_BUCKET_NAME=portal
+      - STORE_ACCESS_ID
+      - STORE_SECRET_KEY
+    ports:
+      - 8004:8004
 
   mysql:
     image: mysql:8.0.17
     container_name: mysql
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE=portal
-      - NETWORK_ACCESS=internal
+      - MYSQL_ROOT_PASSWORD
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
       - 3306:3306
 
-  elasticsearch1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
-    container_name: elasticsearch1
+  minio:
+    image: minio/minio:RELEASE.2019-09-05T23-24-38Z
+    container_name: minio
     restart: always
+    command: server /data
     environment:
-      - node.name=elasticsearch1
-      - discovery.seed_hosts=elasticsearch2
-      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - NETWORK_ACCESS=internal
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      - MINIO_ACCESS_KEY
+      - MINIO_SECRET_KEY
     volumes:
-      - elasticsearch1_data:/usr/share/elasticsearch/data
+      - minio_data:/data
     ports:
-      - 9200:9200
-
-  elasticsearch2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
-    container_name: elasticsearch2
-    restart: always
-    environment:
-      - node.name=elasticsearch2
-      - discovery.seed_hosts=elasticsearch1
-      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - NETWORK_ACCESS=internal
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - elasticsearch2_data:/usr/share/elasticsearch/data
-
-  grafana:
-    image: grafana/grafana:6.3.5
-    container_name: grafana
-    restart: always
-    environment:
-      - LETSENCRYPT_EMAIL
-      - ELASTICSEARCH_HOSTS=http://elasticsearch1:9200
-      - VIRTUAL_HOST=monitoring.portal.mwilson.io
-      - LETSENCRYPT_HOST=monitoring.portal.mwilson.io
-      - NETWORK_ACCESS=external
-    ports:
-      - 3000:3000
+      - 9000:9000
 
   nginx:
     image: jwilder/nginx-proxy
@@ -106,11 +138,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     volumes_from:
       - nginx
-      
+
 volumes:
   mysql_data:
     driver: local
-  elasticsearch1_data:
-    driver: local
-  elasticsearch2_data:
+  minio_data:
     driver: local

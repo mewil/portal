@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/mewil/portal.svg?branch=master)](https://travis-ci.org/mewil/portal)
 
-An social media web app powered by [React](https://reactjs.org/), [Gin](https://github.com/gin-gonic/gin), [gRPC](https://grpc.io/), and much more.
+A social media web app powered by [React](https://reactjs.org/), [Gin](https://github.com/gin-gonic/gin), [gRPC](https://grpc.io/), and much more.
 
 ![alt text](https://github.com/mewil/portal/blob/master/feed.png "Portal Feed")
 

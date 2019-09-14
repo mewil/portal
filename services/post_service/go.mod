@@ -1,4 +1,4 @@
-module github.com/mewil/portal/post
+module github.com/mewil/portal/post_service
 
 go 1.13
 

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"io/ioutil"
 
 	"github.com/google/uuid"
 	"github.com/mewil/portal/common/validation"
@@ -16,7 +17,7 @@ type fileSvc struct {
 	repository FileRepository
 }
 
-const fileBufferSize = 1024
+const fileBufferSize = 4096
 
 func (s *fileSvc) Upload(stream pb.FileSvc_UploadServer) error {
 	buf := bytes.NewBuffer([]byte{})
@@ -52,16 +53,13 @@ func (s *fileSvc) GetFile(req *pb.FileRequest, stream pb.FileSvc_GetFileServer) 
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to fetch file %s", err.Error())
 	}
-	buf := make([]byte, 0, fileBufferSize)
-	for {
-		n, err := reader.Read(buf)
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return status.Errorf(codes.Internal, "failed to read file %s", err.Error())
-		}
+	buf, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to read file %s", err.Error())
+	}
+	for i := 0; i < len(buf); i += fileBufferSize {
 		if err = stream.Send(&pb.FilePart{
-			Content: buf[:n],
+			Content: buf[i : i+fileBufferSize],
 		}); err != nil {
 			return status.Errorf(codes.Internal, "failed to send file part %s", err.Error())
 		}

@@ -27,7 +27,10 @@ func main() {
 
 	fileRepository, err := NewFileRepository(
 		log,
-		"",
+		os.Getenv("STORE_ADDR"),
+		os.Getenv("STORE_ACCESS_ID"),
+		os.Getenv("STORE_SECRET_KEY"),
+		os.Getenv("STORE_BUCKET_NAME"),
 	)
 	if err != nil {
 		log.Fatal("failed to initialize file repository", err)

@@ -253,10 +253,10 @@ func (r *repository) getPostCommentCount(postID string) (n uint32, err error) {
 const topCommentLimit = 5
 
 func (r *repository) getTopPostComments(postID string) ([]*pb.Comment, error) {
-	rows, err := r.db.Query(`select BIN_TO_UUID(comments.comment_id), BIN_TO_UUID(comments.user_id), BIN_TO_UUID(comments.post_id), comments.text, comments.created_at COUNT(like_id) AS like_count
+	rows, err := r.db.Query(`select BIN_TO_UUID(comments.comment_id), BIN_TO_UUID(comments.user_id), BIN_TO_UUID(comments.post_id), comments.text, comments.created_at, count(comment_likes.like_id) as like_count
 from comments
-left join comment_likes 
-on comments.comment_id = comment_likes.comment_id
+left join comment_likes on comments.comment_id = comment_likes.comment_id
+where comments.post_id=UUID_TO_BIN(?)
 group by comments.comment_id
 order by like_count
 limit ?`, postID, topCommentLimit,
@@ -268,28 +268,28 @@ limit ?`, postID, topCommentLimit,
 }
 
 func (r *repository) GetProfile(userID string, page uint32) ([]*pb.Post, error) {
-	return r.getPostPage(`
+	offset := page * postPageSize
+	rows, err := r.db.Query(`
 select IN_TO_UUID(post_id), BIN_TO_UUID(user_id), BIN_TO_UUID(file_id), caption, created_at
 from posts
 where user_id=UUID_TO_BIN(?)
 order by created at desc
-limit ?,?`, userID, page)
+limit ?,?`, userID, offset, postPageSize)
+	if err != nil {
+		return nil, err
+	}
+	return r.readPostRows(rows)
 }
 
 func (r *repository) GetFeed(userID string, page uint32) ([]*pb.Post, error) {
-	return r.getPostPage(`
-select BIN_TO_UUID(post_id), BIN_TO_UUID(user_id), BIN_TO_UUID(file_id), caption, created_at
-from posts
-inner join following
-on posts.user_id = following.following_id
-where following.user_id=UUID_TO_BIN(?)
-order by posts.created_at desc
-limit ?,?`, userID, page)
-}
-
-func (r *repository) getPostPage(query string, userID string, page uint32) ([]*pb.Post, error) {
 	offset := page * postPageSize
-	rows, err := r.db.Query(query, userID, offset, postPageSize)
+	rows, err := r.db.Query(`
+select BIN_TO_UUID(posts.post_id), BIN_TO_UUID(posts.user_id), BIN_TO_UUID(posts.file_id), posts.caption, posts.created_at
+from posts
+left join following on posts.user_id = following.following_id
+where following.user_id=UUID_TO_BIN(?) or posts.user_id=UUID_TO_BIN(?)
+order by posts.created_at desc
+limit ?,?`, userID, userID, offset, postPageSize)
 	if err != nil {
 		return nil, err
 	}

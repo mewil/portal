@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/mewil/portal/common/database"
 	"github.com/mewil/portal/common/logger"
 	"github.com/mewil/portal/pb"
@@ -10,7 +11,7 @@ import (
 )
 
 type UserRepository interface {
-	CreateUser(string, string, string) error
+	CreateUser(string, string) error
 	UserIDExists(string) (bool, error)
 	UsernameExists(string) (bool, error)
 	GetUser(string) (*pb.User, error)
@@ -36,9 +37,9 @@ func NewUserRepository(log logger.Logger, db database.DB) (UserRepository, error
 const userSchema string = `create table if not exists users (
 	user_id binary(16) not null unique,
 	username varchar(64) collate utf8mb4_bin not null unique,
-	file_id binary(16) not null,
-	name varchar(64) collate utf8mb4_bin,
-	description varchar(256) collate utf8mb4_bin,
+	file_id binary(16),
+	name varchar(64) collate utf8mb4_bin default '',
+	description varchar(256) collate utf8mb4_bin default '',
 	updated_at timestamp default current_timestamp,
 	created_at timestamp default current_timestamp,
 	primary key (user_id)
@@ -48,8 +49,8 @@ const followingSchema string = `create table if not exists following (
 	user_id binary(16) not null unique,
 	following_id binary(16) not null unique,
 	created_at timestamp default current_timestamp,
-	key users(user_id),
-	key users(following_id)
+	foreign key (user_id) references users(user_id),
+	foreign key (following_id) references users(user_id)
 ) engine InnoDB;`
 
 type repository struct {
@@ -59,18 +60,18 @@ type repository struct {
 
 const userPageSize = 25
 
-func (r *repository) CreateUser(userID, username, email string) (err error) {
+func (r *repository) CreateUser(userID, username string) (err error) {
 	_, err = r.db.Exec(
-		"insert users set user_id=UUID_TO_BIN(?), username=?, email=?",
+		"insert users set user_id=UUID_TO_BIN(?), username=?, file_id=UUID_TO_BIN(?)",
 		userID,
 		username,
-		email,
+		uuid.UUID{},
 	)
 	return
 }
 
 func (r *repository) UserIDExists(userID string) (exists bool, err error) {
-	err = r.db.QueryRow("select exists (select 1 from users where user_id=?)", userID).Scan(
+	err = r.db.QueryRow("select exists (select 1 from users where user_id=UUID_TO_BIN(?))", userID).Scan(
 		&exists,
 	)
 	return

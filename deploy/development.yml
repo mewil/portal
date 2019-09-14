@@ -1,0 +1,131 @@
+version: '2.0'
+services:
+  frontend_web:
+    image: node:12.11.0
+    container_name: frontend_web
+    restart: always
+    command: sh -c "cd /app && yarn install && yarn dev"
+    volumes:
+      - ../services/frontend_service/app:/app
+    ports:
+      - 8080:8080
+
+  frontend_service:
+    image: frontend_service
+    container_name: frontend_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: frontend_service/Dockerfile
+    environment:
+      - PORT=8000
+      - JWT_SECRET=secret
+      - AUTH_SVC_ADDR=auth_service:8001
+      - USER_SVC_ADDR=user_service:8002
+      - POST_SVC_ADDR=post_service:8003
+      - FILE_SVC_ADDR=file_service:8004
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_HOST=mysql
+      - DB_NAME=portal
+      - DB_PORT=3306
+    ports:
+      - 8000:8000
+
+  auth_service:
+    image: auth_service
+    container_name: auth_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: auth_service/Dockerfile
+    environment:
+      - PORT=8001
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_HOST=mysql
+      - DB_NAME=portal
+      - DB_PORT=3306
+    ports:
+      - 8001:8001
+
+  user_service:
+    image: user_service
+    container_name: user_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: user_service/Dockerfile
+    environment:
+      - PORT=8002
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_HOST=mysql
+      - DB_NAME=portal
+      - DB_PORT=3306
+    ports:
+      - 8002:8002
+
+  post_service:
+    image: post_service
+    container_name: post_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: post_service/Dockerfile
+    environment:
+      - PORT=8003
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_HOST=mysql
+      - DB_NAME=portal
+      - DB_PORT=3306
+    ports:
+      - 8003:8003
+
+  file_service:
+    image: file_service
+    container_name: file_service
+    restart: always
+    build:
+      context: ../services
+      dockerfile: file_service/Dockerfile
+    environment:
+      - PORT=8004
+      - STORE_ADDR=minio:9000
+      - STORE_ACCESS_ID=minio_access_id
+      - STORE_SECRET_KEY=minio_secret_key
+      - STORE_BUCKET_NAME=portal
+    ports:
+      - 8004:8004
+
+  mysql:
+    image: mysql:8.0.17
+    container_name: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=portal
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  minio:
+    image: minio/minio:RELEASE.2019-09-05T23-24-38Z
+    container_name: minio
+    restart: always
+    command: server /data
+    environment:
+      - MINIO_ACCESS_KEY=minio_access_id
+      - MINIO_SECRET_KEY=minio_secret_key
+    volumes:
+      - minio_data:/data
+    ports:
+      - 9000:9000
+
+volumes:
+  mysql_data:
+    driver: local
+  minio_data:
+    driver: local

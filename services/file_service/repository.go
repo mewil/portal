@@ -15,9 +15,26 @@ type FileRepository interface {
 	GetFileStats(fileID string) (*pb.FileStats, error)
 }
 
-func NewFileRepository(log logger.Logger, bucketName string) (FileRepository, error) {
+const defaultMinioRegion = "us-east-1"
+
+func NewFileRepository(log logger.Logger, storeAddr, accessID, secretKey, bucketName string) (FileRepository, error) {
+	client, err := minio.New(storeAddr, accessID, secretKey, false)
+	if err != nil {
+		return nil, err
+	}
 	r := repository{
-		log: log.(*zap.SugaredLogger).Named("repository"),
+		log:        log.(*zap.SugaredLogger).Named("repository"),
+		store:      client,
+		bucketName: bucketName,
+	}
+	found, err := r.store.BucketExists(r.bucketName)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		if err = r.store.MakeBucket(r.bucketName, defaultMinioRegion); err != nil {
+			return nil, err
+		}
 	}
 	return &r, nil
 }

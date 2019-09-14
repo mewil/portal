@@ -1,0 +1,116 @@
+version: '2'
+services:
+  portal:
+    image: portal
+    container_name: portal
+    restart: always
+    build:
+      context: ..
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - LETSENCRYPT_EMAIL
+      - GIN_MODE=release
+      - VIRTUAL_HOST=portal.mwilson.io
+      - LETSENCRYPT_HOST=portal.mwilson.io
+      - NETWORK_ACCESS=external
+    ports:
+      - 7000:7000
+
+  mysql:
+    image: mysql:8.0.17
+    container_name: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE=portal
+      - NETWORK_ACCESS=internal
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    container_name: elasticsearch1
+    restart: always
+    environment:
+      - node.name=elasticsearch1
+      - discovery.seed_hosts=elasticsearch2
+      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - NETWORK_ACCESS=internal
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch1_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    container_name: elasticsearch2
+    restart: always
+    environment:
+      - node.name=elasticsearch2
+      - discovery.seed_hosts=elasticsearch1
+      - cluster.initial_master_nodes=elasticsearch1,elasticsearch2
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - NETWORK_ACCESS=internal
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch2_data:/usr/share/elasticsearch/data
+
+  grafana:
+    image: grafana/grafana:6.3.5
+    container_name: grafana
+    restart: always
+    environment:
+      - LETSENCRYPT_EMAIL
+      - ELASTICSEARCH_HOSTS=http://elasticsearch1:9200
+      - VIRTUAL_HOST=monitoring.portal.mwilson.io
+      - LETSENCRYPT_HOST=monitoring.portal.mwilson.io
+      - NETWORK_ACCESS=external
+    ports:
+      - 3000:3000
+
+  nginx:
+    image: jwilder/nginx-proxy
+    container_name: nginx
+    restart: always
+    volumes:
+      - /etc/nginx/certs
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
+    ports:
+      - 80:80
+      - 443:443
+
+  nginx_letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx_letsencrypt
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    volumes_from:
+      - nginx
+      
+volumes:
+  mysql_data:
+    driver: local
+  elasticsearch1_data:
+    driver: local
+  elasticsearch2_data:
+    driver: local

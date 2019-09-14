@@ -19,14 +19,10 @@ func (s *userSvc) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb
 		return nil, err
 	}
 	username := in.GetUsername()
-	if err := s.validateUsernameDoesNotExist(userID); err != nil {
+	if err := s.validateUsernameDoesNotExist(username); err != nil {
 		return nil, err
 	}
-	email := in.GetEmail()
-	if !validation.ValidEmail(email) {
-		return nil, status.Error(codes.InvalidArgument, "invalid email format")
-	}
-	if err := s.repository.CreateUser(userID, username, email); err != nil {
+	if err := s.repository.CreateUser(userID, username); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user %s", err.Error())
 	}
 	user, err := s.repository.GetUser(userID)

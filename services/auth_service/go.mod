@@ -1,4 +1,4 @@
-module github.com/mewil/portal/auth
+module github.com/mewil/portal/auth_service
 
 go 1.13
 

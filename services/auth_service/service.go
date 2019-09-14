@@ -59,7 +59,7 @@ func (s *authSvc) SignUp(ctx context.Context, in *pb.SignUpRequest) (*pb.SignInR
 		return nil, status.Error(codes.InvalidArgument, "email already exists")
 	}
 	password := in.GetPassword()
-	if len(password) >= 8 {
+	if len(password) < 8 {
 		return nil, status.Error(codes.InvalidArgument, "password is less than 8 characters")
 	}
 	if err := s.repository.StoreAuthRecord(email, userID, password, false); err != nil {

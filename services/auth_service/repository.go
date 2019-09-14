@@ -23,7 +23,8 @@ const authSchema string = `create table if not exists auth (
 	admin tinyint(1) default 0,
 	updated_at timestamp default current_timestamp,
 	created_at timestamp default current_timestamp,
-	primary key (email)
+	primary key (email),
+	key users(user_id)
 ) engine InnoDB default charset utf8mb4 collate utf8mb4_bin;`
 
 type repository struct {
